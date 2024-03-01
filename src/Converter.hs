@@ -51,7 +51,7 @@ newPosT (V2 x y) ind hl =
    in V2 nx ny
 
 makeRectText :: Scroll -> Width -> Height -> T.Text -> [T.Text]
-makeRectText s w h tx = map (takeWidth s w . T.reverse) $ T.transpose $ concatMap  (takeHeight h) (T.lines tx)
+makeRectText s w h tx = map (takeWidth s w . T.reverse) $ T.transpose $ concatMap  (takeHeight h) (T.lines (T.replace " " "　" tx))
 
 takeWidth :: Scroll -> Width -> T.Text -> T.Text
 takeWidth s w tx = let lngT = T.length tx 

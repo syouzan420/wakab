@@ -24,7 +24,9 @@ dependencies:
 - brick
 - text
 - linear
+- microlens
 - microlens-th
+- microlens-mtl
 - bytestring
 - vty
 

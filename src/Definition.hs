@@ -39,14 +39,19 @@ data T = T{shape :: Shape,
 data Y = Y Verb [Arg] deriving (Eq,Show)
 
 --nme: name , pos: position, hnd: hand (left,right)
-data Chra = Chra{nme :: T.Text, pos :: Pos, hnd :: (Maybe Mana,Maybe Mana)} 
+data Chra = Chra{_nme :: T.Text, _pos :: Pos, _hnd :: (Maybe Mana,Maybe Mana)} 
                         deriving (Eq,Show)
 
---txd: text data, txs: text sections, itx: is text showing?, ito: is text start? 
+--txd: text data, txs: text sections
+--txw: tate text whole, txv: tate text view
+--tct: text count
+--itx: is text showing?, ito: is text start? 
 --num: increment
 --mpd: map datas, chs: characters(head is the player)
-data Game = Game{_txd :: ![TextData], _txs :: ![TextSection], _itx :: !Bool, _its :: !Bool
-                ,_num :: Int
+data Game = Game{_txd :: ![TextData], _txs :: ![TextSection]
+                ,_txw :: !T.Text, _txv :: !T.Text
+                ,_tct :: Int
+                ,_itx :: !Bool, _its :: !Bool
                 ,_mpd :: ![MapWhole], _chs :: ![Chra] }
                         deriving (Eq,Show)
 

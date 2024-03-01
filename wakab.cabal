@@ -33,6 +33,7 @@ library
       File
       Initialize
       Lib
+      Load
       UI
   other-modules:
       Paths_wakab
@@ -46,6 +47,8 @@ library
     , brick
     , bytestring
     , linear
+    , microlens
+    , microlens-mtl
     , microlens-th
     , text
     , vty
@@ -65,6 +68,8 @@ executable wakab-exe
     , brick
     , bytestring
     , linear
+    , microlens
+    , microlens-mtl
     , microlens-th
     , text
     , vty
@@ -86,6 +91,8 @@ test-suite wakab-test
     , brick
     , bytestring
     , linear
+    , microlens
+    , microlens-mtl
     , microlens-th
     , text
     , vty
