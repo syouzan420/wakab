@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Converter(makeTextDataT,getMapAndText) where
+module Converter(makeTextDataT,getMapAndText,makeRectText) where
 
 import Data.Maybe (fromMaybe)
 import Linear.V2 (V2(..))
@@ -10,6 +10,9 @@ import Definition (mapCh,Pos,TextType(..),TextData(..),TextSection(..),MapWhole,
 type InitPos = Pos
 type Indent = CInt
 type HeightLimit = CInt 
+type Width = Int
+type Height = Int
+type Scroll = Int
 
 makeTextDataT :: InitPos -> Indent -> HeightLimit 
                               -> TextType -> T.Text -> [TextData]
@@ -46,6 +49,22 @@ newPosT (V2 x y) ind hl =
       nx = if isLimit then x - 3 else x 
       ny = if isLimit then ind else ty
    in V2 nx ny
+
+makeRectText :: Scroll -> Width -> Height -> T.Text -> [T.Text]
+makeRectText s w h tx = map (takeWidth s w . T.reverse) $ T.transpose $ concatMap  (takeHeight h) (T.lines tx)
+
+takeWidth :: Scroll -> Width -> T.Text -> T.Text
+takeWidth s w tx = let lngT = T.length tx 
+                    in if w > lngT then T.replicate (w-lngT) "　" <> tx 
+                                   else T.take w (T.drop s tx)
+
+takeHeight :: Height -> T.Text -> [T.Text]
+takeHeight h tx
+  | tx==T.empty = []
+  | otherwise = let t = T.take h tx 
+                    lngT = T.length t
+                 in if lngT < h then [t <> T.replicate (h-lngT) "　"]   
+                                else t : takeHeight h (T.drop h tx)
 
 getMapAndText :: T.Text -> ([TextSection],[MapWhole])
 getMapAndText = sepMapAndText . getSections . T.lines
