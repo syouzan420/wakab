@@ -90,14 +90,16 @@ getSections = getSections' Nothing []
 
 getSections' :: Maybe T.Text -> [T.Text] -> [T.Text] -> [TextSection]
 getSections' _ [] [] = []
-getSections' Nothing [] (x:xs) = if T.last x == ':' 
-                    then getSections' (Just (T.init x)) [] xs 
-                    else getSections' Nothing [] xs
+getSections' Nothing [] (x:xs) 
+    | x==T.empty = getSections' Nothing [] xs
+    | T.last x == ':' = getSections' (Just (T.init x)) [] xs 
+    | otherwise = getSections' Nothing [] xs
 getSections' Nothing _ _ = []
 getSections' (Just tx) acc [] = [TS tx (T.unlines acc)]
-getSections' (Just tx) acc (x:xs) = if T.last x == ':' 
-                    then TS tx (T.unlines acc) : getSections' (Just (T.init x)) [] xs 
-                    else getSections' (Just tx) (acc++[x]) xs  
+getSections' (Just tx) acc (x:xs) 
+    | x==T.empty = getSections' (Just tx) (acc++[" "]) xs
+    | T.last x == ':' = TS tx (T.unlines acc) : getSections' (Just (T.init x)) [] xs 
+    | otherwise = getSections' (Just tx) (acc++[x]) xs  
                       
 charReplace :: T.Text -> T.Text
 charReplace = T.replace "、" "" . T.replace "。" "" 
