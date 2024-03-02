@@ -27,6 +27,7 @@ library
   exposed-modules:
       AppMain
       Attr
+      Code
       Converter
       Definition
       Event

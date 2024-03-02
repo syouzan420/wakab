@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Converter(makeTextDataT,getMapAndText,makeRectText) where
+module Converter(makeTextDataT,getMapAndText,makeRectText,getInfoFromChar) where
 
 import Data.Maybe (fromMaybe)
 import Linear.V2 (V2(..))
@@ -99,6 +99,37 @@ getSections' (Just tx) acc (x:xs) = if T.last x == ':'
                     then TS tx (T.unlines acc) : getSections' (Just (T.init x)) [] xs 
                     else getSections' (Just tx) (acc++[x]) xs  
                       
+charReplace :: T.Text -> T.Text
+charReplace = T.replace "、" "" . T.replace "。" "" 
 
+elimCode :: T.Text -> T.Text
+elimCode = elimCode' False
 
+elimCode' :: Bool -> T.Text -> T.Text
+elimCode' False tx =
+  let (ch,txs) = fromMaybe ('0',T.empty) (T.uncons tx)
+   in if txs == T.empty then T.singleton ch
+                        else if ch=='\\' then elimCode' True txs 
+                                         else T.singleton ch <> elimCode' False txs
+elimCode' True tx =
+  let (ch,txs) = fromMaybe ('0',T.empty) (T.uncons tx)
+   in if txs == T.empty then T.empty
+                       else case ch of
+                         '\n' -> T.singleton ch <> elimCode' False txs 
+                         '\\' -> elimCode' False txs
+                         _ -> elimCode' True txs
+
+type IsStop = Bool
+type IsTyping = Bool
+type IsCode = Bool
+
+getInfoFromChar :: T.Text -> Int -> (IsStop,IsTyping,IsCode,Char,T.Text,Int)
+getInfoFromChar wtx i = 
+  let ch = T.index wtx i
+      isCode = ch=='\\'
+      isStop = ch=='。'
+      isTyping = not (isStop || ch=='、' || isCode)
+      codeText = if isCode then T.takeWhile (/='\n') (T.drop i wtx) else T.empty
+      scanLength = if isCode then T.length codeText else 1
+   in (isStop,isTyping,isCode,ch,codeText,scanLength)
 

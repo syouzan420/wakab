@@ -9,6 +9,10 @@ type Pos = V2 CInt
 type Title = T.Text
 data TextSection = TS Title T.Text deriving (Eq,Show)
 data TextType = Nml | Wst | Img deriving (Eq,Show)
+
+-- Zenkaku, Hankaku, Maru(Stop), Ten(Wait), BackSlash(CodeStart)
+data CharType = Zen | Han | Maru | Ten | Bks deriving (Eq,Show)
+
 data TextData = Txt TextType Pos Char 
               | TxtR TextType Pos Char T.Text 
               | Code T.Text 
