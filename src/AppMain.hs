@@ -1,4 +1,4 @@
-module AppMain where
+module AppMain(appMain) where
 
 import Brick.BChan (newBChan,writeBChan)
 import Brick.Main (App(..),showFirstCursor,customMain)

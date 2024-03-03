@@ -22,6 +22,11 @@ data MapCell = Path | Road | Field | Wood | Forest | Wall | Block | Water
                                                           deriving (Eq,Show,Enum)
 type MapWhole = [[MapCell]]
 
+type ObName = T.Text
+data Object = Ob ObName Pos ObProperty deriving (Eq,Show)
+data ObProperty = Fr | Bl | Mv deriving (Eq,Show)
+type MapObject = [Object]
+
 
 data Shape = Round | Cubic | Flat deriving (Eq,Show)
 data Element = A | I | U | E | O deriving (Eq,Show)
@@ -49,13 +54,12 @@ data Chra = Chra{_nme :: T.Text, _pos :: Pos, _hnd :: (Maybe Mana,Maybe Mana)}
 --txd: text data, txs: text sections
 --txw: tate text whole, txv: tate text view
 --tct: text count
---itx: is text showing?, ito: is text start? 
---num: increment
+--itx: is text showing? 
 --mpd: map datas, chs: characters(head is the player)
 data Game = Game{_txd :: ![TextData], _txs :: ![TextSection]
                 ,_txw :: !T.Text, _txv :: !T.Text
-                ,_tct :: Int
-                ,_itx :: !Bool, _its :: !Bool
+                ,_tct :: !Int
+                ,_itx :: !Bool
                 ,_mpd :: ![MapWhole], _chs :: ![Chra] }
                         deriving (Eq,Show)
 

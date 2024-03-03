@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Event where
+module Event(appEvent) where
 
 import Brick.Main (halt)
 import Brick.Types (BrickEvent(..),EventM)

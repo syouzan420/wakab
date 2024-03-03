@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-module UI where
+module UI(drawUI) where
 
 import Brick.Types (Widget(..),ViewportType(..))
 import Brick.Widgets.Core (txt,(<+>),(<=>),hLimit,vLimit,viewport)
