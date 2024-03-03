@@ -29,7 +29,6 @@ dependencies:
 - microlens-mtl
 - bytestring
 - vty
-- mtl
 
 ghc-options:
 - -Wall
