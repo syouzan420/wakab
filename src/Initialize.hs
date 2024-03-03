@@ -6,7 +6,8 @@ import Linear.V2 (V2(..))
 import Definition (Game(..),Chra(..))
 
 newGame :: Game
-newGame = Game{_txd=[],_txs=[],_txw=T.empty,_txv=T.empty,_tct=0,_itx=True
+newGame = Game{_txd=[],_txs=[],_txw=T.empty,_txv=T.empty,_tct=0
+              ,_itx=True,_ipl=False
               ,_mpd=[],_chs=[initChra]}
 
 initChra :: Chra

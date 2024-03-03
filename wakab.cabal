@@ -51,6 +51,7 @@ library
     , microlens
     , microlens-mtl
     , microlens-th
+    , mtl
     , text
     , vty
   default-language: Haskell2010
@@ -72,6 +73,7 @@ executable wakab-exe
     , microlens
     , microlens-mtl
     , microlens-th
+    , mtl
     , text
     , vty
     , wakab
@@ -95,6 +97,7 @@ test-suite wakab-test
     , microlens
     , microlens-mtl
     , microlens-th
+    , mtl
     , text
     , vty
     , wakab

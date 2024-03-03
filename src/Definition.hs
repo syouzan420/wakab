@@ -60,6 +60,7 @@ data Game = Game{_txd :: ![TextData], _txs :: ![TextSection]
                 ,_txw :: !T.Text, _txv :: !T.Text
                 ,_tct :: !Int
                 ,_itx :: !Bool
+                ,_ipl :: !Bool
                 ,_mpd :: ![MapWhole], _chs :: ![Chra] }
                         deriving (Eq,Show)
 
