@@ -1,54 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Converter(makeTextDataT,getMapAndText,makeRectText,getInfoFromChar) where
+module Converter(getMapAndText,makeRectText,getInfoFromChar) where
 
 import Data.Maybe (fromMaybe)
-import Linear.V2 (V2(..))
-import Foreign.C.Types (CInt)
 import qualified Data.Text as T
-import Definition (mapCh,Pos,TextType(..),TextData(..),TextSection(..),MapWhole,MapCell(..))
+import Definition (mapCh,TextSection(..),MapWhole,MapCell(..))
 
-type InitPos = Pos
-type Indent = CInt
-type HeightLimit = CInt 
 type Width = Int
 type Height = Int
 type Scroll = Int
-
-makeTextDataT :: InitPos -> Indent -> HeightLimit 
-                              -> TextType -> T.Text -> [TextData]
-makeTextDataT pos ind hl ttp tx = 
-  let (ch,txs) = fromMaybe ('0',T.empty) (T.uncons tx) 
-   in case ch of
-        '\\' -> let (code,rtxs) = getCodeData txs
-                in Code code : makeTextDataT pos ind hl ttp rtxs 
-        _ -> if txs==T.empty 
-              then [Txt ttp pos ch] 
-              else let (hd,tl) = fromMaybe ('0',T.empty) (T.uncons txs)
-                    in if hd=='：' 
-                        then 
-           let (rb,tl2) = getRubi tl 
-            in TxtR ttp pos ch rb : makeTextDataT (newPosT pos ind hl) ind hl ttp tl2
-                        else
-               Txt ttp pos ch : makeTextDataT (newPosT pos ind hl) ind hl ttp txs 
-
-getCodeData :: T.Text -> (T.Text,T.Text)
-getCodeData = T.break (=='\n')
-
-getRubi :: T.Text -> (T.Text,T.Text)
-getRubi tx = let (rb,tl) = T.break (=='：') tx
-                 tl2
-                    | tl==T.empty = T.empty 
-                    | T.head tl == '：' = T.tail tl
-                    | otherwise = tl
-              in (rb,tl2)
-
-newPosT :: Pos -> Indent -> HeightLimit -> Pos 
-newPosT (V2 x y) ind hl = 
-  let ty = y + 1
-      isLimit = ty > hl
-      nx = if isLimit then x - 3 else x 
-      ny = if isLimit then ind else ty
-   in V2 nx ny
 
 makeRectText :: Scroll -> Width -> Height -> T.Text -> [T.Text]
 makeRectText s w h tx = map (takeWidth s w . T.reverse) $ T.transpose $ concatMap  (takeHeight h) (T.lines (T.replace " " "　" tx))
@@ -101,26 +60,6 @@ getSections' (Just tx) acc (x:xs)
     | T.last x == ':' = TS tx (T.unlines acc) : getSections' (Just (T.init x)) [] xs 
     | otherwise = getSections' (Just tx) (acc++[x]) xs  
                       
-charReplace :: T.Text -> T.Text
-charReplace = T.replace "、" "" . T.replace "。" "" 
-
-elimCode :: T.Text -> T.Text
-elimCode = elimCode' False
-
-elimCode' :: Bool -> T.Text -> T.Text
-elimCode' False tx =
-  let (ch,txs) = fromMaybe ('0',T.empty) (T.uncons tx)
-   in if txs == T.empty then T.singleton ch
-                        else if ch=='\\' then elimCode' True txs 
-                                         else T.singleton ch <> elimCode' False txs
-elimCode' True tx =
-  let (ch,txs) = fromMaybe ('0',T.empty) (T.uncons tx)
-   in if txs == T.empty then T.empty
-                       else case ch of
-                         '\n' -> T.singleton ch <> elimCode' False txs 
-                         '\\' -> elimCode' False txs
-                         _ -> elimCode' True txs
-
 type IsStop = Bool
 type IsTyping = Bool
 type IsCode = Bool

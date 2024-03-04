@@ -3,10 +3,12 @@ module Initialize(newGame) where
 
 import qualified Data.Text as T
 import Linear.V2 (V2(..))
-import Definition (Game(..),Chra(..))
+import Definition (Game(..),Chra(..),IMode(..))
 
 newGame :: Game
-newGame = Game{_txd=[],_txs=[],_txw=T.empty,_txv=T.empty,_tct=0
+newGame = Game{_pmd=Txt
+              ,_txs=[],_txw=T.empty,_txv=T.empty
+              ,_tct=0,_tsc=0
               ,_itx=True,_ipl=False
               ,_mpd=[],_chs=[initChra]}
 

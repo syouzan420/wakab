@@ -8,15 +8,6 @@ import Foreign.C.Types (CInt)
 type Pos = V2 CInt
 type Title = T.Text
 data TextSection = TS Title T.Text deriving (Eq,Show)
-data TextType = Nml | Wst | Img deriving (Eq,Show)
-
--- Zenkaku, Hankaku, Maru(Stop), Ten(Wait), BackSlash(CodeStart)
-data CharType = Zen | Han | Maru | Ten | Bks deriving (Eq,Show)
-
-data TextData = Txt TextType Pos Char 
-              | TxtR TextType Pos Char T.Text 
-              | Code T.Text 
-                      deriving (Eq,Show)
 
 data MapCell = Path | Road | Field | Wood | Forest | Wall | Block | Water 
                                                           deriving (Eq,Show,Enum)
@@ -51,18 +42,24 @@ data Y = Y Verb [Arg] deriving (Eq,Show)
 data Chra = Chra{_nme :: T.Text, _pos :: Pos, _hnd :: (Maybe Mana,Maybe Mana)} 
                         deriving (Eq,Show)
 
---txd: text data, txs: text sections
+--pmd: input mode (Txt, Ply)
+--txs: text sections
 --txw: tate text whole, txv: tate text view
---tct: text count
+--tct: text count, tsc: text scroll (from end)
 --itx: is text showing? 
+--ipl: is player?
 --mpd: map datas, chs: characters(head is the player)
-data Game = Game{_txd :: ![TextData], _txs :: ![TextSection]
+data Game = Game{_pmd :: !IMode
+                ,_txs :: ![TextSection]
                 ,_txw :: !T.Text, _txv :: !T.Text
-                ,_tct :: !Int
+                ,_tct :: !Int, _tsc :: !Int
                 ,_itx :: !Bool
                 ,_ipl :: !Bool
                 ,_mpd :: ![MapWhole], _chs :: ![Chra] }
                         deriving (Eq,Show)
+
+-- input mode : text mode, player mode
+data IMode = Txt | Ply deriving (Eq,Show)
 
 data CustomEvent = Ticking deriving Show
 
@@ -82,3 +79,13 @@ textIndent = 3
 
 textHeightLimit :: CInt
 textHeightLimit = 22 
+
+data TextType = Nml | Wst | Img deriving (Eq,Show)
+data TextData = Tx TextType Pos Char 
+              | TxR TextType Pos Char T.Text 
+              | Code T.Text 
+                      deriving (Eq,Show)
+-- Zenkaku, Hankaku, Maru(Stop), Ten(Wait), BackSlash(CodeStart)
+data CharType = Zen | Han | Maru | Ten | Bks deriving (Eq,Show)
+
+

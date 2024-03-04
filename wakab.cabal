@@ -35,6 +35,7 @@ library
       Initialize
       Lib
       Load
+      NotUse
       UI
   other-modules:
       Paths_wakab
