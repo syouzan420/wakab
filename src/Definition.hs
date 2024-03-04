@@ -71,6 +71,12 @@ textFile = "text/waka"
 mapCh :: T.Text
 mapCh = "0123456789abcdefghi"
 
+textWidth :: Int
+textWidth = 15
+
+textHeight :: Int
+textHeight = 18
+
 textInitPos :: Pos
 textInitPos = V2 45 3 
 

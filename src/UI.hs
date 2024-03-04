@@ -9,13 +9,14 @@ import Lens.Micro ((^.))
 import Lens.Micro.TH (makeLenses)
 import qualified Data.Text as T
 import Converter (makeRectText)
-import Definition (Game(..),Name(..))
+import Definition (Game(..),Name(..),textWidth,textHeight)
 
 makeLenses ''Game
 
 drawUI :: Game -> [Widget Name]
 drawUI game = [ui]
-  where m = txt $ T.unlines $ makeRectText 0 15 18 (game^.txv)
+  where m = txt $ T.unlines 
+                $ makeRectText (game^.tsc) textWidth textHeight (game^.txv)
         ms = viewport Mess Vertical m
         ui = txt " " 
              <=> 

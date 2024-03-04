@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Converter(getMapAndText,makeRectText,getInfoFromChar) where
+module Converter(getMapAndText,makeTateText,makeRectText,getInfoFromChar) where
 
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
@@ -9,8 +9,14 @@ type Width = Int
 type Height = Int
 type Scroll = Int
 
+--makeRectText :: Scroll -> Width -> Height -> T.Text -> [T.Text]
+--makeRectText s w h tx = map (takeWidth s w . T.reverse) $ T.transpose $ concatMap  (takeHeight h) (T.lines (T.replace " " "　" tx))
+
 makeRectText :: Scroll -> Width -> Height -> T.Text -> [T.Text]
-makeRectText s w h tx = map (takeWidth s w . T.reverse) $ T.transpose $ concatMap  (takeHeight h) (T.lines (T.replace " " "　" tx))
+makeRectText s w h tx = map (takeWidth s w) (makeTateText h tx)
+
+makeTateText :: Height -> T.Text -> [T.Text]
+makeTateText h tx = map T.reverse $ T.transpose $ concatMap (takeHeight h) (T.lines (T.replace " " "　" tx))
 
 takeWidth :: Scroll -> Width -> T.Text -> T.Text
 takeWidth s w tx = let lngT = T.length tx 
