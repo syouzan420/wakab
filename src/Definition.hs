@@ -18,7 +18,7 @@ type MapWhole = [[MapCell]]
 type ObChar = Char
 type ObName = T.Text
 data Object = Ob ObChar ObName Pos ObProperty deriving (Eq,Show)
-data ObProperty = Fr | Bl | Mv deriving (Eq,Show,Enum)
+data ObProperty = Pl | Ch | En | Fr | Bl | Mv deriving (Eq,Show,Enum)
 type MapObject = [Object]
 
 

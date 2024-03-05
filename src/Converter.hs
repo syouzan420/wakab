@@ -1,10 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Converter(getMapAndText,getText,makeTateText
-                ,makeRectText,getInfoFromChar) where
+module Converter(getText,makeTateText
+                ,makeRectText,getInfoFromChar
+                ,convertMap,makeObjectMap) where
 
 import Data.Maybe (fromMaybe)
+import Linear.V2 (V2(..))
 import qualified Data.Text as T
-import Definition (mapCh,TextSection(..),MapWhole,MapCell(..))
+import Definition (mapCh,TextSection(..),MapWhole,MapObject,Object(..),MapCell(..))
 
 type Width = Int
 type Height = Int
@@ -52,6 +54,22 @@ convertMap :: T.Text -> MapWhole
 convertMap tx =
   let lns = T.lines tx
    in map (map (\ch -> toEnum (fromMaybe 0 (T.findIndex (==ch) mapCh)) :: MapCell) . T.unpack) lns
+
+type PropertyNums = [Int]
+
+makeObjectMap :: T.Text -> PropertyNums -> MapObject
+makeObjectMap tx nms =  
+  let lns = T.lines tx 
+      x = if not (null lns) then T.length (head lns) else 0
+      searchResult = searchObject 0 (T.unpack tx)
+   in zipWith (\(i,ch) pn -> let q = div i x; p = mod i x  
+                                 p' = fromIntegral p; q' = fromIntegral q
+                              in Ob ch T.empty (V2 p' q') (toEnum pn)) searchResult nms 
+
+searchObject :: Int -> String -> [(Int,Char)]
+searchObject _ [] = []
+searchObject i (x:xs) = if x=='*' then searchObject (i+1) xs
+                                  else (i,x):searchObject (i+1) xs
 
 
 getSections :: [T.Text] -> [TextSection]
