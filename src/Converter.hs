@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Converter(getMapAndText,makeTateText,makeRectText,getInfoFromChar) where
+module Converter(getMapAndText,getText,makeTateText
+                ,makeRectText,getInfoFromChar) where
 
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
@@ -33,6 +34,9 @@ takeHeight h tx
 
 getMapAndText :: T.Text -> ([TextSection],[MapWhole])
 getMapAndText = sepMapAndText . getSections . T.lines
+
+getText :: T.Text -> [TextSection]
+getText = getSections . T.lines
 
 sepMapAndText :: [TextSection] -> ([TextSection],[MapWhole])
 sepMapAndText = sepMapAndText' [] []

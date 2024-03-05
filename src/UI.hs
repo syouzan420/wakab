@@ -18,15 +18,16 @@ drawUI game = [ui]
   where m = txt $ T.unlines 
                 $ makeRectText (game^.tsc) textWidth textHeight (game^.txv)
         d = txtWrap $ game^.dbg
+        p = txt "abc/ndef" 
         ms = viewport Mess Vertical m
+        mp = viewport Map Vertical p
         db = viewport Debug Vertical d
         ui = txt " " 
              <=> 
-             (txt "  " <+> hLimit 40 (vLimit 20 ms)
-                           <=>
-                           hLimit 40 (vLimit 10 db)
-                           <=>
-                           txt "Hello World"
+             (txt "  " <+> 
+                    hLimit 40 (vLimit 20 ms) <+>
+                    hLimit 20 (vLimit 15 mp))
+             <=>
+             hLimit 40 (vLimit 10 db)
                            
-             )
 

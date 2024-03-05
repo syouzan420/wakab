@@ -11,7 +11,7 @@ import Initialize (newGame)
 import UI (drawUI)
 import Event (appEvent)
 import Attr (makeColors)
-import Load (makeMapAndText)
+import Load (makeText)
 
 
 theApp :: App Game CustomEvent Name
@@ -34,9 +34,9 @@ appMain = do
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
 
-  (sections,maps) <- makeMapAndText 0
+  sections <- makeText 0
   let (TS _ tx) = head sections
-  let initGame = newGame{_txs=sections,_txw=tx,_mpd=maps}
+  let initGame = newGame{_txs=sections,_txw=tx}
 
   void $ customMain initialVty buildVty (Just chan) theApp initGame
 

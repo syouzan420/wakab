@@ -9,16 +9,20 @@ type Pos = V2 CInt
 type Title = T.Text
 data TextSection = TS Title T.Text deriving (Eq,Show)
 
-data MapCell = Path | Road | Field | Wood | Forest | Wall | Block | Water 
+
+-- map
+data MapCell = Field | Path | Road | Wood | Forest | Wall | Block | Water 
                                                           deriving (Eq,Show,Enum)
 type MapWhole = [[MapCell]]
 
+type ObChar = Char
 type ObName = T.Text
-data Object = Ob ObName Pos ObProperty deriving (Eq,Show)
-data ObProperty = Fr | Bl | Mv deriving (Eq,Show)
+data Object = Ob ObChar ObName Pos ObProperty deriving (Eq,Show)
+data ObProperty = Fr | Bl | Mv deriving (Eq,Show,Enum)
 type MapObject = [Object]
 
 
+-- mana
 data Shape = Round | Cubic | Flat deriving (Eq,Show)
 data Element = A | I | U | E | O deriving (Eq,Show)
 type Size = Int
@@ -48,7 +52,8 @@ data Chra = Chra{_nme :: T.Text, _pos :: Pos, _hnd :: (Maybe Mana,Maybe Mana)}
 --tct: text count, tsc: text scroll (from end)
 --itx: is text showing? 
 --ipl: is player?
---mpd: map datas, chs: characters(head is the player)
+--mpd: map data, mpo: map objects
+--chs: characters(head is the player)
 --dbg: for debug
 data Game = Game{_pmd :: !IMode
                 ,_txs :: ![TextSection]
@@ -56,7 +61,7 @@ data Game = Game{_pmd :: !IMode
                 ,_tct :: !Int, _tsc :: !Int
                 ,_itx :: !Bool
                 ,_ipl :: !Bool
-                ,_mpd :: ![MapWhole]
+                ,_mpd :: !MapWhole, _mpo :: !MapObject
                 ,_chs :: ![Chra]
                 ,_dbg :: !T.Text
                 } deriving (Eq,Show)
@@ -66,7 +71,7 @@ data IMode = Txt | Ply deriving (Eq,Show)
 
 data CustomEvent = Ticking deriving Show
 
-data Name = View | Mess | Debug deriving (Eq,Ord,Show)
+data Name = View | Mess | Map | Debug deriving (Eq,Ord,Show)
 
 textFile :: FilePath
 textFile = "text/waka"

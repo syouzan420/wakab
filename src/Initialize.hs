@@ -10,7 +10,7 @@ newGame = Game{_pmd=Txt
               ,_txs=[],_txw=T.empty,_txv=T.empty
               ,_tct=0,_tsc=0
               ,_itx=True,_ipl=False
-              ,_mpd=[]
+              ,_mpd=[],_mpo=[]
               ,_chs=[initChra]
               ,_dbg=T.empty
               }
