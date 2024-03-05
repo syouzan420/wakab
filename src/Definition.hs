@@ -85,6 +85,12 @@ textWidth = 15
 textHeight :: Int
 textHeight = 18
 
+mapMaxHeight :: Int
+mapMaxHeight = 8
+
+mapMaxWidth :: Int
+mapMaxWidth = 10
+
 textInitPos :: Pos
 textInitPos = V2 45 3 
 
