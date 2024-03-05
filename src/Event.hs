@@ -1,7 +1,8 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Event(appEvent) where
 
-import Brick.Main (halt)
+import Brick.Main (halt,ViewportScroll,viewportScroll,vScrollToEnd)
 import Brick.Types (BrickEvent(..),EventM)
 import Lens.Micro.TH (makeLenses)
 import Lens.Micro.Mtl ((.=),use)
@@ -13,6 +14,9 @@ import Code (exeCode)
 import Definition
 
 makeLenses ''Game
+
+dbScroll :: ViewportScroll Name
+dbScroll = viewportScroll Debug
 
 rightKeyEvent :: EventM Name Game ()
 rightKeyEvent = do
@@ -51,6 +55,7 @@ appEvent e =
           tsc .= 0
         Ply -> return ()
     AppEvent Ticking -> do
+      --debug <- use dbg
       isText <- use itx
       wholeText <- use txw
       textCount <- use tct
@@ -65,5 +70,8 @@ appEvent e =
           let newTextView = textView <> T.singleton targetChar
           txv .= newTextView 
         when isCode $ exeCode codeText
-        tct .= (textCount + scanLength)
+        newWholeText <- use txw 
+        let isNewDialog = wholeText /= newWholeText 
+        tct .= if isNewDialog then 0 else textCount + scanLength
+      vScrollToEnd dbScroll
     _ -> return ()

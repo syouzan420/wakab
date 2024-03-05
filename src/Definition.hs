@@ -49,21 +49,24 @@ data Chra = Chra{_nme :: T.Text, _pos :: Pos, _hnd :: (Maybe Mana,Maybe Mana)}
 --itx: is text showing? 
 --ipl: is player?
 --mpd: map datas, chs: characters(head is the player)
+--dbg: for debug
 data Game = Game{_pmd :: !IMode
                 ,_txs :: ![TextSection]
                 ,_txw :: !T.Text, _txv :: !T.Text
                 ,_tct :: !Int, _tsc :: !Int
                 ,_itx :: !Bool
                 ,_ipl :: !Bool
-                ,_mpd :: ![MapWhole], _chs :: ![Chra] }
-                        deriving (Eq,Show)
+                ,_mpd :: ![MapWhole]
+                ,_chs :: ![Chra]
+                ,_dbg :: !T.Text
+                } deriving (Eq,Show)
 
 -- input mode : text mode, player mode
 data IMode = Txt | Ply deriving (Eq,Show)
 
 data CustomEvent = Ticking deriving Show
 
-data Name = View | Mess deriving (Eq,Ord,Show)
+data Name = View | Mess | Debug deriving (Eq,Ord,Show)
 
 textFile :: FilePath
 textFile = "text/waka"

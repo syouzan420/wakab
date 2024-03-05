@@ -76,7 +76,7 @@ getInfoFromChar wtx i =
       isCode = ch=='\\'
       isStop = ch=='。'
       isTyping = not (isStop || ch=='、' || isCode)
-      codeText = if isCode then T.takeWhile (/='\n') (T.drop i wtx) else T.empty
+      codeText = if isCode then T.tail (T.takeWhile (/='\n') (T.drop i wtx)) else T.empty
       scanLength = if isCode then T.length codeText else 1
    in (isStop,isTyping,isCode,ch,codeText,scanLength)
 

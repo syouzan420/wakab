@@ -10,7 +10,10 @@ newGame = Game{_pmd=Txt
               ,_txs=[],_txw=T.empty,_txv=T.empty
               ,_tct=0,_tsc=0
               ,_itx=True,_ipl=False
-              ,_mpd=[],_chs=[initChra]}
+              ,_mpd=[]
+              ,_chs=[initChra]
+              ,_dbg=T.empty
+              }
 
 initChra :: Chra
 initChra = Chra{_nme="player",_pos=V2 0 0,_hnd=(Nothing,Nothing)}

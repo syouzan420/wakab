@@ -6,7 +6,7 @@ import Brick.Types (EventM)
 import Control.Monad (unless)
 import qualified Data.Text as T
 import Lens.Micro.TH (makeLenses)
-import Lens.Micro.Mtl ((.=),use)
+import Lens.Micro.Mtl ((.=),(%=),use)
 import Data.Maybe (fromMaybe)
 import Data.List (uncons)
 import Definition
@@ -38,8 +38,8 @@ moveDialog :: T.Text -> StateG
 moveDialog title = do
   textSections <- use txs
   let tsKeyValues = map (\(TS ti tx) -> (ti,tx)) textSections
-  let newText = fromMaybe T.empty (lookup title tsKeyValues)
+  let newText = fromMaybe "notext" (lookup title tsKeyValues)
   unless (newText==T.empty) $ do
     txw .= newText
-    tct .= 0
+    txv %= (<> "\n \n")
 
