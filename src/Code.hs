@@ -48,8 +48,9 @@ setMap i = do
   obMapText <- lookupFromSections ("omap" <> i)
   obPropText <- lookupFromSections ("oprop" <> i)
   let mapData = convertMap mapText
-  let obPropNums = map read ((words . T.unpack) obPropText)
-  let mapObject = makeObjectMap obMapText obPropNums
+  let obPropNLayerNums = map ((\(p,dl) -> (read p,read$tail dl)) . break (=='-'))
+                                                    ((words . T.unpack) obPropText)
+  let mapObject = makeObjectMap obMapText obPropNLayerNums
   mpd .= mapData
   mpo .= mapObject
 

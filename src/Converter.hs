@@ -55,16 +55,17 @@ convertMap tx =
   let lns = T.lines tx
    in map (map (\ch -> toEnum (fromMaybe 0 (T.findIndex (==ch) mapCh)) :: MapCell) . T.unpack) lns
 
-type PropertyNums = [Int]
+type PropNLayerNums = [(Int,Int)]
 
-makeObjectMap :: T.Text -> PropertyNums -> MapObject
+makeObjectMap :: T.Text -> PropNLayerNums -> MapObject
 makeObjectMap tx nms =  
   let lns = T.lines tx 
       x = if not (null lns) then T.length (head lns) else 0
       searchResult = searchObject 0 (T.unpack tx)
-   in zipWith (\(i,ch) pn -> let q = div i x; p = mod i x  
-                                 p' = fromIntegral p; q' = fromIntegral q
-                              in Ob ch T.empty (V2 p' q') (toEnum pn)) searchResult nms 
+   in zipWith (\(i,ch) (pn,ln) ->
+       let q = div i x; p = mod i x  
+           p' = fromIntegral p; q' = fromIntegral q
+        in Ob ch T.empty ln (V2 p' q') (toEnum pn)) searchResult nms 
 
 searchObject :: Int -> String -> [(Int,Char)]
 searchObject _ [] = []
