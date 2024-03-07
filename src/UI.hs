@@ -8,7 +8,7 @@ import Brick.Widgets.Core (txt,txtWrap,(<+>),(<=>),hLimit,vLimit,viewport)
 import Lens.Micro ((^.))
 import Lens.Micro.TH (makeLenses)
 import qualified Data.Text as T
-import Converter (makeRectText)
+import Converter (makeRectText,showMap)
 import Definition (Game(..),Name(..),textWidth,textHeight)
 
 makeLenses ''Game
@@ -18,7 +18,7 @@ drawUI game = [ui]
   where m = txt $ T.unlines 
                 $ makeRectText (game^.tsc) textWidth textHeight (game^.txv)
         d = txtWrap $ game^.dbg
-        p = txt "abc/ndef" 
+        p = txt $ showMap (game^.mpo) (game^.mpd)
         ms = viewport Mess Vertical m
         mp = viewport Map Vertical p
         db = viewport Debug Vertical d

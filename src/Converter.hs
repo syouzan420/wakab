@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Converter(getText,makeTateText
                 ,makeRectText,getInfoFromChar
-                ,convertMap,makeObjectMap) where
+                ,convertMap,makeObjectMap,showMap,showMapWhole) where
 
 import Data.Maybe (fromMaybe)
 import Linear.V2 (V2(..))
@@ -60,18 +60,46 @@ type PropNLayerNums = [(Int,Int)]
 makeObjectMap :: T.Text -> PropNLayerNums -> MapObject
 makeObjectMap tx nms =  
   let lns = T.lines tx 
-      x = if not (null lns) then T.length (head lns) else 0
-      searchResult = searchObject 0 (T.unpack tx)
-   in zipWith (\(i,ch) (pn,ln) ->
-       let q = div i x; p = mod i x  
-           p' = fromIntegral p; q' = fromIntegral q
-        in Ob ch T.empty ln (V2 p' q') (toEnum pn)) searchResult nms 
+      w = if not (null lns) then T.length (head lns) else 0
+      searchResult t = searchObject 0 (T.unpack t)
+   in concatMap (\(t,q) -> zipWith (\(i,ch) (pn,ln) ->
+       let p = mod i w  
+           p' = fromIntegral p
+        in Ob ch T.empty ln (V2 p' q) (toEnum pn)) (searchResult t) nms) (zip lns [0..])
+
 
 searchObject :: Int -> String -> [(Int,Char)]
 searchObject _ [] = []
 searchObject i (x:xs) = if x=='*' then searchObject (i+1) xs
                                   else (i,x):searchObject (i+1) xs
 
+
+showMap :: MapObject -> MapWhole -> T.Text
+showMap mo mw = T.unlines $ showMapObject (sortByLayers mo) $ showMapWhole mw 
+
+showMapObject :: MapObject -> [T.Text] -> [T.Text]
+showMapObject [] mtx = mtx 
+showMapObject ((Ob ch _ _ (V2 x y) _):xs) mtx =
+  let x' = fromIntegral x; y' = fromIntegral y
+   in showMapObject xs (insertChar ch x' y' mtx)
+
+insertChar :: Char -> Int -> Int -> [T.Text] -> [T.Text]
+insertChar ch x y txs =  
+  let ln = txs!!y
+      (hd,tl) = T.splitAt x ln
+      nln = hd <> T.singleton ch <> T.tail tl
+      (bln,aln) = splitAt y txs
+    in bln ++ [nln] ++ tail aln 
+
+
+sortByLayers :: MapObject -> MapObject
+sortByLayers [] = []
+sortByLayers (ob@(Ob _ _ x _ _):xs) = sortSmaller ++ [ob] ++ sortLarger
+  where sortSmaller = [o | o@(Ob _ _ l _ _) <- xs, l <= x] 
+        sortLarger = [o | o@(Ob _ _ l _ _) <- xs, l > x]
+
+showMapWhole ::  MapWhole -> [T.Text]
+showMapWhole = map (T.pack. map (\mc -> if mc==Wall || mc==Block || mc==Water then '#' else '.')) 
 
 getSections :: [T.Text] -> [TextSection]
 getSections = getSections' Nothing []
@@ -86,7 +114,7 @@ getSections' Nothing _ _ = []
 getSections' (Just tx) acc [] = [TS tx (T.unlines acc)]
 getSections' (Just tx) acc (x:xs) 
     | x==T.empty = getSections' (Just tx) (acc++[" "]) xs
-    | T.last x == ':' = TS tx (T.unlines acc) : getSections' (Just (T.init x)) [] xs 
+    | T.last x == ':' = TS tx ((T.unlines . init) acc) : getSections' (Just (T.init x)) [] xs 
     | otherwise = getSections' (Just tx) (acc++[x]) xs  
                       
 type IsStop = Bool
@@ -100,6 +128,6 @@ getInfoFromChar wtx i =
       isStop = ch=='。'
       isTyping = not (isStop || ch=='、' || isCode)
       codeText = if isCode then T.tail (T.takeWhile (/='\n') (T.drop i wtx)) else T.empty
-      scanLength = if isCode then T.length codeText else 1
+      scanLength = if isCode then T.length codeText + 1 else 1
    in (isStop,isTyping,isCode,ch,codeText,scanLength)
 

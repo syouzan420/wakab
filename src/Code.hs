@@ -7,9 +7,10 @@ import Control.Monad (unless)
 import qualified Data.Text as T
 import Lens.Micro.TH (makeLenses)
 import Lens.Micro.Mtl ((.=),(%=),use)
+import Linear.V2 (V2(..))
 import Data.Maybe (fromMaybe)
 import Data.List (uncons)
-import Converter (convertMap,makeObjectMap)
+import Converter (convertMap,makeObjectMap,showMapWhole,showMap)
 import Definition
 
 makeLenses ''Game
@@ -26,17 +27,17 @@ exeOneCode evt = do
   let en_ags = T.split (=='_') evt
   let (en,ags) = fromMaybe ("null",[]) (uncons en_ags)
   unless (null ags) $ case en of
-    "mvd" -> moveDialog (head ags)
-    "stm" -> setMap (head ags)
+    "mvdi" -> moveDialog (head ags)
+    "stmp" -> setMap (head ags)
     _ -> return ()
   case en of
-    "pls" -> setPlayer
+    "stpl" -> setPlayer
     _ -> return ()
 
 lookupFromSections :: T.Text -> StateG T.Text
 lookupFromSections tx = do
   textSections <- use txs
-  let tsKeyValues = map (\(TS ti tx) -> (ti,tx)) textSections
+  let tsKeyValues = map (\(TS ti t) -> (ti,t)) textSections
   return (fromMaybe T.empty (lookup tx tsKeyValues))  
 
 setPlayer :: StateG ()
@@ -46,13 +47,14 @@ setMap :: T.Text -> StateG ()
 setMap i = do
   mapText <- lookupFromSections ("map" <> i)  
   obMapText <- lookupFromSections ("omap" <> i)
-  obPropText <- lookupFromSections ("oprop" <> i)
+  obPropText <- lookupFromSections ("oprp" <> i)
   let mapData = convertMap mapText
   let obPropNLayerNums = map ((\(p,dl) -> (read p,read$tail dl)) . break (=='-'))
                                                     ((words . T.unpack) obPropText)
-  let mapObject = makeObjectMap obMapText obPropNLayerNums
+  let mapObjectPre = makeObjectMap obMapText obPropNLayerNums
+  mapObject <- mapM (\(Ob ch _ l ps pr) -> lookupFromSections ("name" <> T.singleton ch) >>= (\nm -> return (Ob ch (if nm==T.empty then nm else T.init nm) l ps pr))) mapObjectPre
   mpd .= mapData
-  mpo .= mapObject
+  mpo .= mapObject 
 
 moveDialog :: T.Text -> StateG () 
 moveDialog title = do

@@ -69,7 +69,8 @@ appEvent e =
         when isTyping $ do
           let newTextView = textView <> T.singleton targetChar
           txv .= newTextView 
-        when isCode $ exeCode codeText
+        when isCode $ do
+          exeCode codeText
         newWholeText <- use txw 
         let isNewDialog = wholeText /= newWholeText 
         tct .= if isNewDialog then 0 else textCount + scanLength
