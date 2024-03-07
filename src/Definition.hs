@@ -19,7 +19,7 @@ type ObChar = Char
 type ObName = T.Text
 type ObLayer = Int
 data Object = Ob ObChar ObName ObLayer Pos ObProperty deriving (Eq,Show)
-data ObProperty = Pl | Ch | En | Fr | Bl | Mv deriving (Eq,Show,Enum)
+data ObProperty = Pl | Ch | En | Fr | Bl | Mv | No deriving (Eq,Show,Enum)
 type MapObject = [Object]
 
 
