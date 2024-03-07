@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Action
       AppMain
       Attr
       Code
@@ -36,6 +37,7 @@ library
       Lib
       Load
       NotUse
+      Object
       UI
   other-modules:
       Paths_wakab

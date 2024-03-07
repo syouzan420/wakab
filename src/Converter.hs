@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Converter(getText,makeTateText
                 ,makeRectText,getInfoFromChar
-                ,convertMap,makeObjectMap,showMap,showMapWhole) where
+                ,convertMap,makeObjectMap,showMap) where
 
 import Data.Maybe (fromMaybe)
 import Linear.V2 (V2(..))
 import qualified Data.Text as T
-import Definition (mapCh,TextSection(..),MapWhole,MapObject,Object(..),MapCell(..))
+import Definition (mapCh,TextSection(..),MapWhole,MapObject,Object(..)
+                  ,ObProperty(..),MapCell(..))
 
 type Width = Int
 type Height = Int
@@ -61,11 +62,14 @@ makeObjectMap :: T.Text -> PropNLayerNums -> MapObject
 makeObjectMap tx nms =  
   let lns = T.lines tx 
       w = if not (null lns) then T.length (head lns) else 0
-      searchResult t = searchObject 0 (T.unpack t)
-   in concatMap (\(t,q) -> zipWith (\(i,ch) (pn,ln) ->
-       let p = mod i w  
-           p' = fromIntegral p
-        in Ob ch T.empty ln (V2 p' q) (toEnum pn)) (searchResult t) nms) (zip lns [0..])
+      txnc = T.replace "\n" "" tx
+      searchResult = searchObject 0 (T.unpack txnc)
+   in zipWith (\(i,ch) (pn,ln) ->
+       let p = mod i w ; q = div i w 
+           p' = fromIntegral p; q' = fromIntegral q
+           opr = toEnum pn
+           oname = if opr==Pl then "player" else T.empty
+        in Ob ch oname ln (V2 p' q') opr) searchResult nms
 
 
 searchObject :: Int -> String -> [(Int,Char)]

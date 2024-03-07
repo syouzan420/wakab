@@ -7,10 +7,9 @@ import Control.Monad (unless)
 import qualified Data.Text as T
 import Lens.Micro.TH (makeLenses)
 import Lens.Micro.Mtl ((.=),(%=),use)
-import Linear.V2 (V2(..))
 import Data.Maybe (fromMaybe)
 import Data.List (uncons)
-import Converter (convertMap,makeObjectMap,showMapWhole,showMap)
+import Converter (convertMap,makeObjectMap)
 import Definition
 
 makeLenses ''Game
@@ -41,7 +40,7 @@ lookupFromSections tx = do
   return (fromMaybe T.empty (lookup tx tsKeyValues))  
 
 setPlayer :: StateG ()
-setPlayer = ipl .= True
+setPlayer = pmd .= Ply 
 
 setMap :: T.Text -> StateG ()
 setMap i = do
@@ -52,7 +51,7 @@ setMap i = do
   let obPropNLayerNums = map ((\(p,dl) -> (read p,read$tail dl)) . break (=='-'))
                                                     ((words . T.unpack) obPropText)
   let mapObjectPre = makeObjectMap obMapText obPropNLayerNums
-  mapObject <- mapM (\(Ob ch _ l ps pr) -> lookupFromSections ("name" <> T.singleton ch) >>= (\nm -> return (Ob ch (if nm==T.empty then nm else T.init nm) l ps pr))) mapObjectPre
+  mapObject <- mapM (\(Ob ch nme l ps pr) -> lookupFromSections ("name" <> T.singleton ch) >>= (\nm -> return (Ob ch (if nm==T.empty then nme else T.init nm) l ps pr))) mapObjectPre
   mpd .= mapData
   mpo .= mapObject 
 

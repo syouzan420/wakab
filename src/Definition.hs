@@ -52,7 +52,6 @@ data Chra = Chra{_nme :: T.Text, _pos :: Pos, _hnd :: (Maybe Mana,Maybe Mana)}
 --txw: tate text whole, txv: tate text view
 --tct: text count, tsc: text scroll (from end)
 --itx: is text showing? 
---ipl: is player?
 --mpd: map data, mpo: map objects
 --chs: characters(head is the player)
 --dbg: for debug
@@ -61,7 +60,6 @@ data Game = Game{_pmd :: !IMode
                 ,_txw :: !T.Text, _txv :: !T.Text
                 ,_tct :: !Int, _tsc :: !Int
                 ,_itx :: !Bool
-                ,_ipl :: !Bool
                 ,_mpd :: !MapWhole, _mpo :: !MapObject
                 ,_chs :: ![Chra]
                 ,_dbg :: !T.Text
@@ -69,6 +67,9 @@ data Game = Game{_pmd :: !IMode
 
 -- input mode : text mode, player mode
 data IMode = Txt | Ply deriving (Eq,Show)
+
+-- Enter, Cancel, Right, Up, Left, Down
+data Input = Ent | Ccl | Ri | Up | Lf | Dn deriving (Eq,Show)
 
 data CustomEvent = Ticking deriving Show
 
