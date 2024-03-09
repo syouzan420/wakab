@@ -36,11 +36,13 @@ keyEvent inp = do
             tsc .= if scroll>0 then scroll - 1 else scroll
           _ -> return ()
     Ply -> do 
+      debug <- use dbg
+      mapPosition <- use mpp
       mapData <- use mpd
       mapObject <- use mpo
       let nmpo = movePlayer inp mapData mapObject
       mpo .= nmpo
-
+      dbg .= debug <> "\n" <> T.pack (show mapPosition) 
 
 appEvent :: BrickEvent Name CustomEvent -> EventM Name Game ()
 appEvent e =
@@ -58,7 +60,6 @@ appEvent e =
           tsc .= 0
         Ply -> return ()
     AppEvent Ticking -> do
-      debug <- use dbg
       isText <- use itx
       wholeText <- use txw
       textCount <- use tct

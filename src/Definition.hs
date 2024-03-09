@@ -60,7 +60,7 @@ data Game = Game{_pmd :: !IMode
                 ,_txw :: !T.Text, _txv :: !T.Text
                 ,_tct :: !Int, _tsc :: !Int
                 ,_itx :: !Bool
-                ,_mpd :: !MapWhole, _mpo :: !MapObject
+                ,_mpd :: !MapWhole, _mpo :: !MapObject, _mpp :: !Pos
                 ,_chs :: ![Chra]
                 ,_dbg :: !T.Text
                 } deriving (Eq,Show)
@@ -87,17 +87,14 @@ textWidth = 15
 textHeight :: Int
 textHeight = 18
 
-mapMaxHeight :: Int
-mapMaxHeight = 8
+mapWinSize :: Pos
+mapWinSize = V2 8 10
 
-mapMaxWidth :: Int
-mapMaxWidth = 10
+--textInitPos :: Pos
+--textInitPos = V2 45 3 
 
-textInitPos :: Pos
-textInitPos = V2 45 3 
-
-textIndent :: CInt
-textIndent = 3
+--textIndent :: CInt
+--textIndent = 3
 
 textHeightLimit :: CInt
 textHeightLimit = 22 

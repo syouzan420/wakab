@@ -5,11 +5,13 @@ module Code(exeCode) where
 import Brick.Types (EventM)
 import Control.Monad (unless)
 import qualified Data.Text as T
+import Linear.V2 (V2(..))
 import Lens.Micro.TH (makeLenses)
 import Lens.Micro.Mtl ((.=),(%=),use)
 import Data.Maybe (fromMaybe)
 import Data.List (uncons)
-import Converter (convertMap,makeObjectMap)
+import Converter (convertMap,makeObjectMap,setMapStartPos)
+import Object (getPosByName)
 import Definition
 
 makeLenses ''Game
@@ -52,6 +54,10 @@ setMap i = do
                                                     ((words . T.unpack) obPropText)
   let mapObjectPre = makeObjectMap obMapText obPropNLayerNums
   mapObject <- mapM (\(Ob ch nme l ps pr) -> lookupFromSections ("name" <> T.singleton ch) >>= (\nm -> return (Ob ch (if nm==T.empty then nme else T.init nm) l ps pr))) mapObjectPre
+  let pps = getPosByName "player" mapObject
+  let mapSize = V2 (fromIntegral$length$head mapData) (fromIntegral$length mapData)
+  let mpos = setMapStartPos pps mapWinSize mapSize
+  mpp .= mpos
   mpd .= mapData
   mpo .= mapObject 
 

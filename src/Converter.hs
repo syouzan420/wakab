@@ -1,13 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Converter(getText,makeTateText
-                ,makeRectText,getInfoFromChar
+                ,makeRectText,getInfoFromChar,setMapStartPos
                 ,convertMap,makeObjectMap,showMap) where
 
 import Data.Maybe (fromMaybe)
 import Linear.V2 (V2(..))
 import qualified Data.Text as T
 import Definition (mapCh,TextSection(..),MapWhole,MapObject,Object(..)
-                  ,ObProperty(..),MapCell(..))
+                  ,ObProperty(..),MapCell(..),Pos)
 
 type Width = Int
 type Height = Int
@@ -35,21 +35,37 @@ takeHeight h tx
                  in if lngT < h then [t <> T.replicate (h-lngT) "　"]   
                                 else t : takeHeight h (T.drop h tx)
 
-getMapAndText :: T.Text -> ([TextSection],[MapWhole])
-getMapAndText = sepMapAndText . getSections . T.lines
+--getMapAndText :: T.Text -> ([TextSection],[MapWhole])
+--getMapAndText = sepMapAndText . getSections . T.lines
 
 getText :: T.Text -> [TextSection]
 getText = getSections . T.lines
 
-sepMapAndText :: [TextSection] -> ([TextSection],[MapWhole])
-sepMapAndText = sepMapAndText' [] []
+--sepMapAndText :: [TextSection] -> ([TextSection],[MapWhole])
+--sepMapAndText = sepMapAndText' [] []
 
-sepMapAndText' :: [TextSection] -> [MapWhole] -> [TextSection] -> ([TextSection],[MapWhole])
-sepMapAndText' ts mw [] = (ts,mw) 
-sepMapAndText' ts mw (x@(TS t dt):xs) =
-  if T.length t > 3 && T.take 3 t == "map"
-      then sepMapAndText' ts (mw++[convertMap dt]) xs 
-      else sepMapAndText' (ts++[x]) mw xs
+--sepMapAndText' :: [TextSection] -> [MapWhole] -> [TextSection] -> ([TextSection],[MapWhole])
+--sepMapAndText' ts mw [] = (ts,mw) 
+--sepMapAndText' ts mw (x@(TS t dt):xs) =
+--  if T.length t > 3 && T.take 3 t == "map"
+--      then sepMapAndText' ts (mw++[convertMap dt]) xs 
+--      else sepMapAndText' (ts++[x]) mw xs
+
+type PlyPos = Pos
+type MapSize = Pos
+type MapWinSize = Pos
+type MapPos = Pos
+
+setMapStartPos :: PlyPos -> MapWinSize -> MapSize -> MapPos
+setMapStartPos (V2 x y) (V2 w h) (V2 mw mh) =
+  let (V2 cx cy) = V2 (div w 2) (div h 2)  -- map window center
+      fp = if x > cx then x-cx else 0
+      fq = if y > cy then y-cy else 0
+      sp = if mw < fp+w then mw-w else fp
+      sq = if mh < fq+h then mh-h else fq
+      p = max sp 0 
+      q = max sq 0
+   in V2 p q
 
 convertMap :: T.Text -> MapWhole
 convertMap tx =
@@ -94,7 +110,6 @@ insertChar ch x y txs =
       nln = hd <> T.singleton ch <> T.tail tl
       (bln,aln) = splitAt y txs
     in bln ++ [nln] ++ tail aln 
-
 
 sortByLayers :: MapObject -> MapObject
 sortByLayers [] = []
