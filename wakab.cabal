@@ -36,7 +36,6 @@ library
       Initialize
       Lib
       Load
-      NotUse
       Object
       UI
   other-modules:

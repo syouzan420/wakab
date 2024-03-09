@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Converter(getText,makeTateText
-                ,makeRectText,getInfoFromChar,setMapStartPos
-                ,convertMap,makeObjectMap,showMap) where
+module Converter(getText,makeTateText,makeRectText,getInfoFromChar
+                ,setMapStartPos,convertMap,makeObjectMap,showMap
+                ,putMapInFrame) where
 
 import Data.Maybe (fromMaybe)
 import Linear.V2 (V2(..))
@@ -35,21 +35,9 @@ takeHeight h tx
                  in if lngT < h then [t <> T.replicate (h-lngT) "　"]   
                                 else t : takeHeight h (T.drop h tx)
 
---getMapAndText :: T.Text -> ([TextSection],[MapWhole])
---getMapAndText = sepMapAndText . getSections . T.lines
-
 getText :: T.Text -> [TextSection]
 getText = getSections . T.lines
 
---sepMapAndText :: [TextSection] -> ([TextSection],[MapWhole])
---sepMapAndText = sepMapAndText' [] []
-
---sepMapAndText' :: [TextSection] -> [MapWhole] -> [TextSection] -> ([TextSection],[MapWhole])
---sepMapAndText' ts mw [] = (ts,mw) 
---sepMapAndText' ts mw (x@(TS t dt):xs) =
---  if T.length t > 3 && T.take 3 t == "map"
---      then sepMapAndText' ts (mw++[convertMap dt]) xs 
---      else sepMapAndText' (ts++[x]) mw xs
 
 type PlyPos = Pos
 type MapSize = Pos
@@ -66,6 +54,13 @@ setMapStartPos (V2 x y) (V2 w h) (V2 mw mh) =
       p = max sp 0 
       q = max sq 0
    in V2 p q
+
+putMapInFrame :: MapWinSize -> MapPos -> T.Text -> T.Text
+putMapInFrame (V2 mw mh) (V2 mx my) mpText =
+  let mw' = fromIntegral mw; mh' = fromIntegral mh
+      mx' = fromIntegral mx; my' = fromIntegral my
+      lns = map (T.take mw' . T.drop mx') $ take mh' $ drop my' $ T.lines mpText
+   in T.unlines lns
 
 convertMap :: T.Text -> MapWhole
 convertMap tx =

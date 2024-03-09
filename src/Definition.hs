@@ -88,23 +88,5 @@ textHeight :: Int
 textHeight = 18
 
 mapWinSize :: Pos
-mapWinSize = V2 8 10
-
---textInitPos :: Pos
---textInitPos = V2 45 3 
-
---textIndent :: CInt
---textIndent = 3
-
-textHeightLimit :: CInt
-textHeightLimit = 22 
-
-data TextType = Nml | Wst | Img deriving (Eq,Show)
-data TextData = Tx TextType Pos Char 
-              | TxR TextType Pos Char T.Text 
-              | Code T.Text 
-                      deriving (Eq,Show)
--- Zenkaku, Hankaku, Maru(Stop), Ten(Wait), BackSlash(CodeStart)
-data CharType = Zen | Han | Maru | Ten | Bks deriving (Eq,Show)
-
+mapWinSize = V2 12 6 
 
