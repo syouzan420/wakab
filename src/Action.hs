@@ -7,17 +7,18 @@ import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..),ObProperty(..))
 
 type MapPos = Pos
 type MapWinPos = Pos
+type IsDiagonal = Bool
 
-movePlayer :: Input -> MapWinPos -> MapPos -> MapWhole
+movePlayer :: Input -> IsDiagonal -> MapWinPos -> MapPos -> MapWhole
                                    -> MapObject -> (MapObject,MapPos) 
-movePlayer p (V2 w h) (V2 mx my) md mo =  
+movePlayer p b (V2 w h) (V2 mx my) md mo =  
   let pps = getPosByName "player" mo
       ply = getLayerByName "player" mo
       dps = case p of
-         Ri -> V2 1 0
-         Up -> V2 0 (-1)
-         Lf -> V2 (-1) 0
-         Dn -> V2 0 1
+         Ri -> if b then V2 1 (-1) else V2 1 0
+         Up -> if b then V2 (-1) (-1) else V2 0 (-1)
+         Lf -> if b then V2 (-1) 1 else V2 (-1) 0
+         Dn -> if b then V2 1 1 else V2 0 1
          _ -> V2 0 0
       tps@(V2 tx ty) = pps + dps
       tx' = fromIntegral tx; ty' = fromIntegral ty

@@ -3,7 +3,7 @@ module Initialize(newGame) where
 
 import qualified Data.Text as T
 import Linear.V2 (V2(..))
-import Definition (Game(..),Chra(..),IMode(..))
+import Definition (Game(..),Chra(..),IMode(..),Direction(..))
 
 newGame :: Game
 newGame = Game{_pmd=Txt
@@ -16,5 +16,6 @@ newGame = Game{_pmd=Txt
               }
 
 initChra :: Chra
-initChra = Chra{_nme="player",_pos=V2 0 0,_hnd=(Nothing,Nothing)}
+initChra = Chra{_nme="player",_pos=V2 0 0,_dir=South
+               ,_hnd=(Nothing,Nothing)}
 

@@ -4,10 +4,12 @@ module Event(appEvent) where
 
 import Brick.Main (halt,ViewportScroll,viewportScroll,vScrollToEnd)
 import Brick.Types (BrickEvent(..),EventM)
+import Lens.Micro ((^.))
 import Lens.Micro.TH (makeLenses)
 import Lens.Micro.Mtl ((.=),use)
 import Control.Monad (when,unless)
 import qualified Graphics.Vty as V
+import Graphics.Vty.Input.Events (Modifier(..))
 import qualified Data.Text as T
 import Converter (makeTateText,getInfoFromChar)
 import Action (movePlayer)
@@ -15,12 +17,22 @@ import Code (exeCode)
 import Definition
 
 makeLenses ''Game
+makeLenses ''Chra
 
 dbScroll :: ViewportScroll Name
 dbScroll = viewportScroll Debug
 
-keyEvent :: Input -> EventM Name Game ()
-keyEvent inp = do
+okEvent :: EventM Name Game ()
+okEvent = do
+      inputMode <- use pmd
+      case inputMode of
+        Txt -> do
+          itx .= True 
+          tsc .= 0
+        Ply -> return ()
+
+keyEvent :: Input -> [Modifier] -> EventM Name Game ()
+keyEvent inp mdf = do
   inputMode <- use pmd
   case inputMode of
     Txt -> when (inp==Ri || inp==Lf) $ do 
@@ -40,26 +52,33 @@ keyEvent inp = do
       mapData <- use mpd
       mapObject <- use mpo
       mapPos <- use mpp
-      let (nmpo,nmpp) = movePlayer inp mapWinSize mapPos mapData mapObject
+      charas <- use chs
+      let player = head charas
+      let pDir = player^.dir
+      let isDiag = MMeta `elem` mdf
+      let keyDir = case inp of
+                    Ri -> if isDiag then EN else East
+                    Up -> if isDiag then NW else North
+                    Lf -> if isDiag then WS else West
+                    Dn -> if isDiag then SE else South
+                    _ -> pDir
+      let isSameDir = pDir == keyDir
+      let (nmpo,nmpp) = if isSameDir
+            then movePlayer inp isDiag mapWinSize mapPos mapData mapObject
+            else (mapObject,mapPos) 
+      let nPlayer = player{_dir=keyDir}
+      chs .= nPlayer:tail charas
       mpo .= nmpo
       mpp .= nmpp
---      dbg .= debug <> "\n" <> T.pack (show mapPos) 
+--      dbg .= debug <> "\n" <> T.pack (show keyDir) 
 
 appEvent :: BrickEvent Name CustomEvent -> EventM Name Game ()
 appEvent e =
   case e of
     VtyEvent (V.EvKey V.KEsc []) -> halt
-    VtyEvent (V.EvKey (V.KChar 'l') []) -> keyEvent Ri
-    VtyEvent (V.EvKey (V.KChar 'h') []) -> keyEvent Lf
-    VtyEvent (V.EvKey (V.KChar 'k') []) -> keyEvent Up 
-    VtyEvent (V.EvKey (V.KChar 'j') []) -> keyEvent Dn 
-    VtyEvent (V.EvKey (V.KChar ' ') []) -> do
-      inputMode <- use pmd
-      case inputMode of
-        Txt -> do
-          itx .= True 
-          tsc .= 0
-        Ply -> return ()
+    VtyEvent (V.EvKey (V.KChar kch) mdf) -> do
+      let input = case kch of 'l'->Ri; 'h'->Lf; 'k'->Up; 'j'->Dn; ' '->Ok; _->Dm
+      case input of Ok -> okEvent; Dm -> return (); _ -> keyEvent input mdf
     AppEvent Ticking -> do
 --      debug <- use dbg
       isText <- use itx

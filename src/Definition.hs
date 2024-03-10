@@ -44,7 +44,8 @@ data T = T{shape :: Shape,
 data Y = Y Verb [Arg] deriving (Eq,Show)
 
 --nme: name , pos: position, hnd: hand (left,right)
-data Chra = Chra{_nme :: T.Text, _pos :: Pos, _hnd :: (Maybe Mana,Maybe Mana)} 
+data Chra = Chra{_nme :: T.Text, _pos :: Pos, _dir :: Direction
+                ,_hnd :: (Maybe Mana,Maybe Mana)} 
                         deriving (Eq,Show)
 
 --pmd: input mode (Txt, Ply)
@@ -68,8 +69,8 @@ data Game = Game{_pmd :: !IMode
 -- input mode : text mode, player mode
 data IMode = Txt | Ply deriving (Eq,Show)
 
--- Enter, Cancel, Right, Up, Left, Down
-data Input = Ent | Ccl | Ri | Up | Lf | Dn deriving (Eq,Show)
+-- Ok, Cancel, Right, Up, Left, Down, Dummy
+data Input = Ok | Cn | Ri | Up | Lf | Dn | Dm deriving (Eq,Show)
 
 data CustomEvent = Ticking deriving Show
 
