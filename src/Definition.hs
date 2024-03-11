@@ -24,7 +24,7 @@ type MapObject = [Object]
 
 
 -- mana
-data Shape = Round | Cubic | Flat deriving (Eq,Show)
+data Shape = Round | Cubic | Flat | Pole | NoShape deriving (Eq,Show)
 data Element = A | I | U | E | O deriving (Eq,Show)
 type Size = Int
 type Hardness = Int
@@ -34,14 +34,13 @@ data Direction = East | EN | North | NW | West | WS | South | SE deriving (Eq,Sh
 data Verb = Be | Hit | Throw | Emit | Guard | Use deriving (Eq,Show)
 data Mana = Mana T Y deriving (Eq,Show)
 data Arg = Arg Direction Mana deriving (Eq,Show)
-data T = T{shape :: Shape,
-           size :: Size,
-           hardness :: Hardness,
-           temperature :: Temperature,
-           power :: Power,
-           element :: Element
+data T = T{_shape :: Shape,
+           _size :: Size,
+           _hardness :: Hardness,
+           _power :: Power,
+           _element :: Element
           } deriving (Eq,Show)
-data Y = Y Verb [Arg] deriving (Eq,Show)
+data Y = Y Verb Arg deriving (Eq,Show)
 
 --nme: name , pos: position, hnd: hand (left,right)
 data Chra = Chra{_nme :: T.Text, _pos :: Pos, _dir :: Direction
