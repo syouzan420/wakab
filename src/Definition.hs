@@ -40,7 +40,7 @@ data T = T{_shape :: Shape,
            _power :: Power,
            _element :: Element
           } deriving (Eq,Show)
-data Y = Y Verb Arg deriving (Eq,Show)
+data Y = Y Verb [Arg] deriving (Eq,Show)
 
 --nme: name , pos: position, hnd: hand (left,right)
 data Chra = Chra{_nme :: T.Text, _pos :: Pos, _dir :: Direction
