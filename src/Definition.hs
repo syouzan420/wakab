@@ -9,7 +9,6 @@ type Pos = V2 CInt
 type Title = T.Text
 data TextSection = TS Title T.Text deriving (Eq,Show)
 
-----
 -- map
 data MapCell = Field | Path | Road | Wood | Forest | Wall | Block | Water 
                                                           deriving (Eq,Show,Enum)

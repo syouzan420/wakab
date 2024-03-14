@@ -40,4 +40,3 @@ appMain = do
 
   void $ customMain initialVty buildVty (Just chan) theApp initGame
 
-  putStrLn "Hello"
