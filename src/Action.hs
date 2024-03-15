@@ -1,10 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Action where
 
+import qualified Data.Text as T
 import Linear.V2 (V2(..))
 import Object (getPosByName,getLayerByName,getOprByPos,getLayerByPos,updatePosByName)
-import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..),ObProperty(..))
+import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..)
+                  ,ObProperty(..),ObName,Chra(..),Direction(..))
 
+type MapSize = (Int,Int)
 type MapPos = Pos
 type MapWinPos = Pos
 type IsDiagonal = Bool
@@ -43,4 +46,10 @@ movePlayer p b (V2 w h) (V2 mx my) md mo =
       nmo = if nps/=pps then updatePosByName "player" nps mo else mo
    in (nmo, V2 nmx nmy)
       
-
+hitAction :: ObName -> [Chra] -> MapSize -> MapObject -> MapObject 
+hitAction onm chras (mh,mw) mt = 
+  let tchra = filter (\(Chra nm _ _ _) -> nm==onm) chras 
+      (Chra _ ps dr hn) = 
+          if null tchra then Chra T.empty (V2 0 0) South (Nothing,Nothing)
+                        else head tchra 
+   in undefined
