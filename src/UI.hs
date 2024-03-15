@@ -18,7 +18,8 @@ drawUI game = [ui]
   where m = txt $ T.unlines 
                 $ makeRectText (game^.tsc) textWidth textHeight (game^.txv)
         d = txtWrap $ game^.dbg
-        p = txt $ putMapInFrame mapWinSize (game^.mpp) $ showMap (game^.mpo) (game^.mpd)
+        p = txt $ putMapInFrame mapWinSize (game^.mpp) 
+                $ showMap (game^.mpo) (game^.mpt) (game^.mpd)
         ms = viewport Mess Vertical m
         mp = viewport Map Vertical p
         db = viewport Debug Vertical d

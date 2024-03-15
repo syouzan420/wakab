@@ -89,8 +89,8 @@ searchObject i (x:xs) = if x=='*' then searchObject (i+1) xs
                                   else (i,x):searchObject (i+1) xs
 
 
-showMap :: MapObject -> MapWhole -> T.Text
-showMap mo mw = T.unlines $ showMapObject (sortByLayers mo) $ showMapWhole mw 
+showMap :: MapObject -> MapObject -> MapWhole -> T.Text
+showMap mo mt mw = T.unlines $ showMapObject (sortByLayers mo <> mt) $ showMapWhole mw 
 
 showMapObject :: MapObject -> [T.Text] -> [T.Text]
 showMapObject [] mtx = mtx 

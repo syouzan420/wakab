@@ -51,7 +51,7 @@ data Chra = Chra{_nme :: T.Text, _pos :: Pos, _dir :: Direction
 --txw: tate text whole, txv: tate text view
 --tct: text count, tsc: text scroll (from end)
 --itx: is text showing? 
---mpd: map data, mpo: map objects
+--mpd: map data, mpo: map objects, mpt: map objects changing with time
 --chs: characters(head is the player)
 --dbg: for debug
 data Game = Game{_pmd :: !IMode
@@ -59,7 +59,8 @@ data Game = Game{_pmd :: !IMode
                 ,_txw :: !T.Text, _txv :: !T.Text
                 ,_tct :: !Int, _tsc :: !Int
                 ,_itx :: !Bool
-                ,_mpd :: !MapWhole, _mpo :: !MapObject, _mpp :: !Pos
+                ,_mpd :: !MapWhole, _mpo :: !MapObject, _mpt :: !MapObject
+                ,_mpp :: !Pos
                 ,_chs :: ![Chra]
                 ,_dbg :: !T.Text
                 } deriving (Eq,Show)
@@ -72,7 +73,7 @@ data Input = Ok | Cn | Ri | Up | Lf | Dn | Dm deriving (Eq,Show)
 
 data CustomEvent = Ticking deriving Show
 
-data Name = View | Mess | Map | Debug deriving (Eq,Ord,Show)
+data Name = Mess | Map | Debug deriving (Eq,Ord,Show)
 
 textFile :: FilePath
 textFile = "text/waka"
