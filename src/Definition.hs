@@ -18,7 +18,8 @@ type ObChar = Char
 type ObName = T.Text
 type ObLayer = Int
 data Object = Ob ObChar ObName ObLayer Pos ObProperty deriving (Eq,Show)
-data ObProperty = Pl | Ch | En | Fr | Bl | Mv | No deriving (Eq,Show,Enum)
+data ObProperty = Pl | Ch | En | Ef | Fr | Bl | Mv | No deriving (Eq,Show,Enum)
+--Player,Chara,Enemy,Effect,Free,Block,Move,Nothing
 type MapObject = [Object]
 
 
@@ -29,7 +30,8 @@ type Size = Int
 type Hardness = Int
 type Temperature = Int
 type Power = Int
-data Direction = East | EN | North | NW | West | WS | South | SE deriving (Eq,Show)
+data Direction = East | EN | North | NW | West | WS | South | SE | NoDir
+                                                           deriving (Eq,Show)
 data Verb = Be | Hit | Throw | Emit | Guard | Use deriving (Eq,Show)
 data Mana = Mana T Y deriving (Eq,Show)
 data Arg = Arg Direction Mana deriving (Eq,Show)

@@ -5,7 +5,7 @@ import qualified Data.Text as T
 import Linear.V2 (V2(..))
 import Object (getPosByName,getLayerByName,getOprByPos,getLayerByPos,updatePosByName)
 import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..)
-                  ,ObProperty(..),ObName,Chra(..),Direction(..))
+                  ,Object(..),ObProperty(..),ObName,Chra(..),Direction(..))
 
 type MapSize = (Int,Int)
 type MapPos = Pos
@@ -17,12 +17,7 @@ movePlayer :: Input -> IsDiagonal -> MapWinPos -> MapPos -> MapWhole
 movePlayer p b (V2 w h) (V2 mx my) md mo =  
   let pps = getPosByName "player" mo
       ply = getLayerByName "player" mo
-      dps = case p of
-         Ri -> if b then V2 1 (-1) else V2 1 0
-         Up -> if b then V2 (-1) (-1) else V2 0 (-1)
-         Lf -> if b then V2 (-1) 1 else V2 (-1) 0
-         Dn -> if b then V2 1 1 else V2 0 1
-         _ -> V2 0 0
+      dps = dirToDelta $ inpToDir b p
       tps@(V2 tx ty) = pps + dps
       tx' = fromIntegral tx; ty' = fromIntegral ty
       mh = length md
@@ -45,11 +40,23 @@ movePlayer p b (V2 w h) (V2 mx my) md mo =
         | otherwise = my
       nmo = if nps/=pps then updatePosByName "player" nps mo else mo
    in (nmo, V2 nmx nmy)
+
+inpToDir :: IsDiagonal -> Input -> Direction
+inpToDir True p = case p of Ri -> EN; Up -> NW; Lf -> WS; Dn -> SE; _ -> NoDir
+inpToDir False p = case p of
+  Ri -> East; Up -> North; Lf -> West; Dn -> South; _ -> NoDir
+
+dirToDelta :: Direction -> Pos
+dirToDelta dr = case dr of
+  East -> V2 1 0; EN -> V2 1 (-1); North -> V2 0 (-1); NW -> V2 (-1) (-1)
+  West -> V2 (-1) 0; WS -> V2 (-1) 1; South -> V2 0 1; SE -> V2 1 1; NoDir -> V2 0 0
       
 hitAction :: ObName -> [Chra] -> MapSize -> MapObject -> MapObject 
 hitAction onm chras (mh,mw) mt = 
   let tchra = filter (\(Chra nm _ _ _) -> nm==onm) chras 
       (Chra _ ps dr hn) = 
-          if null tchra then Chra T.empty (V2 0 0) South (Nothing,Nothing)
+          if null tchra then Chra T.empty (V2 (-1) 0) South (Nothing,Nothing)
                         else head tchra 
-   in undefined
+      eps@(V2 ex ey) = ps + dirToDelta dr
+      isShow = ex>=0 && ex<fromIntegral mw && ey>=0 && ey<fromIntegral mh
+   in if isShow then Ob '/' "hit" 1 eps Ef:mt else mt 
