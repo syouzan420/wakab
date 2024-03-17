@@ -1,13 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Converter(getText,makeTateText,makeRectText,getInfoFromChar
                 ,setMapStartPos,convertMap,makeObjectMap,showMap
-                ,putMapInFrame) where
+                ,putMapInFrame,mapSize,inpToDir,dirToDelta) where
 
 import Data.Maybe (fromMaybe)
 import Linear.V2 (V2(..))
 import qualified Data.Text as T
 import Definition (mapCh,TextSection(..),MapWhole,MapObject,Object(..)
-                  ,ObProperty(..),MapCell(..),Pos)
+                  ,ObProperty(..),MapCell(..),Pos,Direction(..),Input(..))
 
 type Width = Int
 type Height = Int
@@ -43,7 +43,18 @@ type PlyPos = Pos
 type MapSize = Pos
 type MapWinSize = Pos
 type MapPos = Pos
+type IsDiagonal = Bool
 
+inpToDir :: IsDiagonal -> Input -> Direction
+inpToDir True p = case p of Ri -> EN; Up -> NW; Lf -> WS; Dn -> SE; _ -> NoDir
+inpToDir False p = case p of
+  Ri -> East; Up -> North; Lf -> West; Dn -> South; _ -> NoDir
+
+dirToDelta :: Direction -> Pos
+dirToDelta dr = case dr of
+  East -> V2 1 0; EN -> V2 1 (-1); North -> V2 0 (-1); NW -> V2 (-1) (-1)
+  West -> V2 (-1) 0; WS -> V2 (-1) 1; South -> V2 0 1; SE -> V2 1 1; NoDir -> V2 0 0
+      
 setMapStartPos :: PlyPos -> MapWinSize -> MapSize -> MapPos
 setMapStartPos (V2 x y) (V2 w h) (V2 mw mh) =
   let (V2 cx cy) = V2 (div w 2) (div h 2)  -- map window center
@@ -61,6 +72,10 @@ putMapInFrame (V2 mw mh) (V2 mx my) mpText =
       mx' = fromIntegral mx; my' = fromIntegral my
       lns = map (T.take mw' . T.drop mx') $ take mh' $ drop my' $ T.lines mpText
    in T.unlines lns
+
+mapSize :: MapWhole -> (Int,Int)
+mapSize md = if null md then (0,0) else (length$head md,length md)
+
 
 convertMap :: T.Text -> MapWhole
 convertMap tx =

@@ -11,8 +11,8 @@ import Control.Monad (when,unless)
 import qualified Graphics.Vty as V
 import Graphics.Vty.Input.Events (Modifier(..))
 import qualified Data.Text as T
-import Converter (makeTateText,getInfoFromChar)
-import Action (movePlayer)
+import Converter (makeTateText,getInfoFromChar,mapSize,inpToDir)
+import Action (movePlayer,hitAction)
 import Code (exeCode)
 import Definition
 
@@ -29,7 +29,11 @@ okEvent = do
         Txt -> do
           itx .= True 
           tsc .= 0
-        Ply -> return ()
+        Ply -> do
+          mapData <- use mpd
+          charas <- use chs
+          mapEffect <- use mpt
+          mpt .= hitAction "player" charas (mapSize mapData) mapEffect 
 
 keyEvent :: Input -> [Modifier] -> EventM Name Game ()
 keyEvent inp mdf = do
@@ -55,22 +59,52 @@ keyEvent inp mdf = do
       charas <- use chs
       let player = head charas
       let pDir = player^.dir
+      let pPos = player^.pos
       let isDiag = MMeta `elem` mdf
-      let keyDir = case inp of
-                    Ri -> if isDiag then EN else East
-                    Up -> if isDiag then NW else North
-                    Lf -> if isDiag then WS else West
-                    Dn -> if isDiag then SE else South
-                    _ -> pDir
+      let keyDir = (\d -> if d==NoDir then pDir else d) $ inpToDir isDiag inp
       let isSameDir = pDir == keyDir
-      let (nmpo,nmpp) = if isSameDir
+      let (nmpo,nmpp,nplp) = if isSameDir
             then movePlayer inp isDiag mapWinSize mapPos mapData mapObject
-            else (mapObject,mapPos) 
-      let nPlayer = player{_dir=keyDir}
+            else (mapObject,mapPos,pPos) 
+      let nPlayer = player{_dir=keyDir,_pos=nplp}
+--      mapEffect <- use mpt
       chs .= nPlayer:tail charas
       mpo .= nmpo
       mpp .= nmpp
---      dbg .= debug <> "\n" <> T.pack (show keyDir) 
+--      dbg .= debug <> "\n" <> T.pack (show mapEffect) 
+
+textUpdate :: EventM Name Game ()
+textUpdate = do
+  isText <- use itx
+  wholeText <- use txw
+  textCount <- use tct
+  let textLength = T.length wholeText
+  let isTextShowing = textCount < textLength
+  when (isText && isTextShowing) $ do
+    textView <- use txv
+    let (isStop,isTyping,isCode,targetChar,codeText,scanLength) 
+                          = getInfoFromChar wholeText textCount
+    when isStop $ itx .= False
+    when isTyping $ do
+      let newTextView = textView <> T.singleton targetChar
+      txv .= newTextView 
+    when isCode $ do
+      exeCode codeText
+    newWholeText <- use txw 
+    let isNewDialog = wholeText /= newWholeText 
+    tct .= if isNewDialog then 0 else textCount + scanLength
+
+effectUpdate :: EventM Name Game ()
+effectUpdate = do
+  mapEffect <- use mpt
+  mpt .= scanEffect mapEffect
+
+scanEffect :: MapObject -> MapObject
+scanEffect [] = []
+scanEffect (ob@(Ob ch nm ly ps pr):xs) 
+  | ch=='/' = Ob '\\' nm ly ps pr:scanEffect xs 
+  | ch=='\\' = scanEffect xs
+  | otherwise = ob:scanEffect xs
 
 appEvent :: BrickEvent Name CustomEvent -> EventM Name Game ()
 appEvent e =
@@ -80,25 +114,7 @@ appEvent e =
       let input = case kch of 'l'->Ri; 'h'->Lf; 'k'->Up; 'j'->Dn; ' '->Ok; _->Dm
       case input of Ok -> okEvent; Dm -> return (); _ -> keyEvent input mdf
     AppEvent Ticking -> do
---      debug <- use dbg
-      isText <- use itx
-      wholeText <- use txw
-      textCount <- use tct
-      let textLength = T.length wholeText
-      let isTextShowing = textCount < textLength
-      when (isText && isTextShowing) $ do
-        textView <- use txv
-        let (isStop,isTyping,isCode,targetChar,codeText,scanLength) 
-                              = getInfoFromChar wholeText textCount
-        when isStop $ itx .= False
-        when isTyping $ do
-          let newTextView = textView <> T.singleton targetChar
-          txv .= newTextView 
-        when isCode $ do
-          exeCode codeText
-        newWholeText <- use txw 
-        let isNewDialog = wholeText /= newWholeText 
-        tct .= if isNewDialog then 0 else textCount + scanLength
-  --    dbg .= debug <> "\n" <> T.pack (show inputMode)
+      textUpdate
+      effectUpdate
       vScrollToEnd dbScroll
     _ -> return ()

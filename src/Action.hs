@@ -1,19 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Action where
+module Action (movePlayer,hitAction) where
 
 import qualified Data.Text as T
 import Linear.V2 (V2(..))
 import Object (getPosByName,getLayerByName,getOprByPos,getLayerByPos,updatePosByName)
+import Converter (inpToDir,dirToDelta)
 import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..)
                   ,Object(..),ObProperty(..),ObName,Chra(..),Direction(..))
 
 type MapSize = (Int,Int)
 type MapPos = Pos
+type PlyPos = Pos
 type MapWinPos = Pos
 type IsDiagonal = Bool
 
 movePlayer :: Input -> IsDiagonal -> MapWinPos -> MapPos -> MapWhole
-                                   -> MapObject -> (MapObject,MapPos) 
+                                   -> MapObject -> (MapObject,MapPos,PlyPos) 
 movePlayer p b (V2 w h) (V2 mx my) md mo =  
   let pps = getPosByName "player" mo
       ply = getLayerByName "player" mo
@@ -39,18 +41,8 @@ movePlayer p b (V2 w h) (V2 mx my) md mo =
         | ny-my > h-1 && my < mh'-h = my + 1
         | otherwise = my
       nmo = if nps/=pps then updatePosByName "player" nps mo else mo
-   in (nmo, V2 nmx nmy)
+   in (nmo, V2 nmx nmy, nps)
 
-inpToDir :: IsDiagonal -> Input -> Direction
-inpToDir True p = case p of Ri -> EN; Up -> NW; Lf -> WS; Dn -> SE; _ -> NoDir
-inpToDir False p = case p of
-  Ri -> East; Up -> North; Lf -> West; Dn -> South; _ -> NoDir
-
-dirToDelta :: Direction -> Pos
-dirToDelta dr = case dr of
-  East -> V2 1 0; EN -> V2 1 (-1); North -> V2 0 (-1); NW -> V2 (-1) (-1)
-  West -> V2 (-1) 0; WS -> V2 (-1) 1; South -> V2 0 1; SE -> V2 1 1; NoDir -> V2 0 0
-      
 hitAction :: ObName -> [Chra] -> MapSize -> MapObject -> MapObject 
 hitAction onm chras (mh,mw) mt = 
   let tchra = filter (\(Chra nm _ _ _) -> nm==onm) chras 
