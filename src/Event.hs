@@ -63,14 +63,15 @@ keyEvent inp mdf = do
       let isDiag = MMeta `elem` mdf
       let keyDir = (\d -> if d==NoDir then pDir else d) $ inpToDir isDiag inp
       let isSameDir = pDir == keyDir
-      let (nmpo,nmpp,nplp) = if isSameDir
+      let (nmpo,nmpp,nplp,evt) = if isSameDir
             then movePlayer inp isDiag mapWinSize mapPos mapData mapObject
-            else (mapObject,mapPos,pPos) 
+            else (mapObject,mapPos,pPos,[]) 
       let nPlayer = player{_dir=keyDir,_pos=nplp}
 --      mapEffect <- use mpt
       chs .= nPlayer:tail charas
       mpo .= nmpo
       mpp .= nmpp
+      evp .= evt
 --      dbg .= debug <> "\n" <> T.pack (show mapEffect) 
 
 textUpdate :: EventM Name Game ()

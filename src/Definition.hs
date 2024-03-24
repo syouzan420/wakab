@@ -22,6 +22,8 @@ data ObProperty = Pl | Ch | En | Ef | Fr | Bl | Mv | No deriving (Eq,Show,Enum)
 --Player,Chara,Enemy,Effect,Free,Block,Move,Nothing
 type MapObject = [Object]
 
+-- player event
+data PEvent = PMove Pos | PFace Object | PUse Mana deriving (Eq,Show) 
 
 -- mana
 data Shape = Round | Cubic | Flat | Pole | NoShape deriving (Eq,Show)
@@ -54,6 +56,8 @@ data Chra = Chra{_nme :: T.Text, _pos :: Pos, _dir :: Direction
 --tct: text count, tsc: text scroll (from end)
 --itx: is text showing? 
 --mpd: map data, mpo: map objects, mpt: map objects changing with time
+--mpp: map position 
+--evp: event pool
 --chs: characters(head is the player)
 --dbg: for debug
 data Game = Game{_pmd :: !IMode
@@ -63,6 +67,7 @@ data Game = Game{_pmd :: !IMode
                 ,_itx :: !Bool
                 ,_mpd :: !MapWhole, _mpo :: !MapObject, _mpt :: !MapObject
                 ,_mpp :: !Pos
+                ,_evp :: ![PEvent]
                 ,_chs :: ![Chra]
                 ,_dbg :: !T.Text
                 } deriving (Eq,Show)

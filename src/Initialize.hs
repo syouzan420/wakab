@@ -11,6 +11,7 @@ newGame = Game{_pmd=Txt
               ,_tct=0,_tsc=0
               ,_itx=True
               ,_mpd=[],_mpo=[],_mpt=[],_mpp=V2 0 0
+              ,_evp=[]
               ,_chs=[initChra]
               ,_dbg=T.empty
               }

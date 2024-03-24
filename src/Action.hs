@@ -5,7 +5,7 @@ import qualified Data.Text as T
 import Linear.V2 (V2(..))
 import Object (getPosByName,getLayerByName,getOprByPos,getLayerByPos,updatePosByName)
 import Converter (inpToDir,dirToDelta)
-import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..)
+import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..),PEvent(..)
                   ,Object(..),ObProperty(..),ObName,Chra(..),Direction(..))
 
 type MapSize = (Int,Int)
@@ -15,7 +15,7 @@ type MapWinPos = Pos
 type IsDiagonal = Bool
 
 movePlayer :: Input -> IsDiagonal -> MapWinPos -> MapPos -> MapWhole
-                                   -> MapObject -> (MapObject,MapPos,PlyPos) 
+                                   -> MapObject -> (MapObject,MapPos,PlyPos,[PEvent]) 
 movePlayer p b (V2 w h) (V2 mx my) md mo =  
   let pps = getPosByName "player" mo
       ply = getLayerByName "player" mo
@@ -41,7 +41,8 @@ movePlayer p b (V2 w h) (V2 mx my) md mo =
         | ny-my > h-1 && my < mh'-h = my + 1
         | otherwise = my
       nmo = if nps/=pps then updatePosByName "player" nps mo else mo
-   in (nmo, V2 nmx nmy, nps)
+      evt = [PMove nps] -- !!not complete!! necessary to add object info
+   in (nmo, V2 nmx nmy, nps, evt)
 
 hitAction :: ObName -> [Chra] -> MapSize -> MapObject -> MapObject 
 hitAction onm chras (mh,mw) mt = 
