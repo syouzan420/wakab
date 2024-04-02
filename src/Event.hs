@@ -52,7 +52,7 @@ keyEvent inp mdf = do
             tsc .= if scroll>0 then scroll - 1 else scroll
           _ -> return ()
     Ply -> do 
---      debug <- use dbg
+      debug <- use dbg
       mapData <- use mpd
       mapObject <- use mpo
       mapPos <- use mpp
@@ -67,12 +67,11 @@ keyEvent inp mdf = do
             then movePlayer inp isDiag mapWinSize mapPos mapData mapObject
             else (mapObject,mapPos,pPos,[]) 
       let nPlayer = player{_dir=keyDir,_pos=nplp}
---      mapEffect <- use mpt
       chs .= nPlayer:tail charas
       mpo .= nmpo
       mpp .= nmpp
       evp .= evt
---      dbg .= debug <> "\n" <> T.pack (show mapEffect) 
+      dbg .= debug <> "\n" <> T.pack (show evt) 
 
 textUpdate :: EventM Name Game ()
 textUpdate = do

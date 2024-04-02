@@ -23,7 +23,8 @@ data ObProperty = Pl | Ch | En | Ef | Fr | Bl | Mv | No deriving (Eq,Show,Enum)
 type MapObject = [Object]
 
 -- player event
-data PEvent = PMove Pos | PFace Object | PUse Mana deriving (Eq,Show) 
+data PEvent = PMove Pos | PFace Object | PRide Object | PHide Object 
+            | PUse Mana deriving (Eq,Show) 
 
 -- mana
 data Shape = Round | Cubic | Flat | Pole | NoShape deriving (Eq,Show)

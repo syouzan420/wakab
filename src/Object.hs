@@ -14,15 +14,20 @@ getLayerByName _ [] = 0
 getLayerByName tn ((Ob _ nm ly _ _):xs) =
   if tn==nm then ly else getLayerByName tn xs
 
+getObjByPos :: Pos -> ObLayer -> MapObject -> Object
+getObjByPos _ _ [] = Ob ' ' T.empty 0 (V2 0 0) No
+getObjByPos pos lay (ob@(Ob _ _ ly ps _):xs) = 
+  if pos==ps && lay==ly then ob else getObjByPos pos lay xs 
+
 getNameByPos :: Pos -> MapObject -> ObName 
 getNameByPos _ [] = T.empty 
 getNameByPos pos ((Ob _ nm _ ps _):xs) =
   if pos==ps then nm else getNameByPos pos xs
 
-getOprByPos :: Pos -> MapObject -> ObProperty
-getOprByPos _ [] = No
-getOprByPos pos ((Ob _ _ _ ps op):xs) =
-  if pos==ps then op else getOprByPos pos xs  
+getOprByPos :: Pos -> ObLayer -> MapObject -> ObProperty
+getOprByPos _ _ [] = No
+getOprByPos pos lay ((Ob _ _ ly ps op):xs) =
+  if pos==ps && lay==ly then op else getOprByPos pos lay xs  
 
 getLayerByPos :: Pos -> MapObject -> ObLayer 
 getLayerByPos _ [] = 0 

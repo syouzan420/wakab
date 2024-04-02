@@ -3,7 +3,7 @@ module Action (movePlayer,hitAction) where
 
 import qualified Data.Text as T
 import Linear.V2 (V2(..))
-import Object (getPosByName,getLayerByName,getOprByPos,getLayerByPos,updatePosByName)
+import Object (getPosByName,getLayerByName,getObjByPos,updatePosByName)
 import Converter (inpToDir,dirToDelta)
 import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..),PEvent(..)
                   ,Object(..),ObProperty(..),ObName,Chra(..),Direction(..))
@@ -26,10 +26,13 @@ movePlayer p b (V2 w h) (V2 mx my) md mo =
       mw = if null md then 0 else length (head md)
       isInMap = tx'>=0 && tx'<mw && ty'>=0 && ty'<mh 
       mcot = (md!!ty')!!tx' -- map cell on target
-      moot = getOprByPos tps mo  -- map opr on target
-      molot = getLayerByPos tps mo -- map object layer on target
-      isBlock = (mcot `elem` [Wall,Block,Water]) || 
-                ((moot `elem` [Ch,Bl,Mv]) && molot==ply) 
+      obsl@(Ob _ _ _ _ soPr) = getObjByPos tps ply mo  -- map opr on target
+      obdl@(Ob _ _ _ _ doPr) = getObjByPos tps (ply-1) mo
+      obul@(Ob _ _ _ _ uoPr) = getObjByPos tps (ply+1) mo
+      isFace = soPr `elem` [Ch,Bl,Mv]
+      isRide = doPr /= No
+      isHide = uoPr /= No
+      isBlock = (mcot `elem` [Wall,Block,Water]) || isFace
       nps@(V2 nx ny) = if isInMap && not isBlock then tps else pps
       mw' = fromIntegral mw; mh' = fromIntegral mh
       nmx 
@@ -41,7 +44,8 @@ movePlayer p b (V2 w h) (V2 mx my) md mo =
         | ny-my > h-1 && my < mh'-h = my + 1
         | otherwise = my
       nmo = if nps/=pps then updatePosByName "player" nps mo else mo
-      evt = [PMove nps] -- !!not complete!! necessary to add object info
+      evt = [PMove nps]<>[PFace obsl | isFace]<>[PRide obdl | isRide]
+                       <>[PHide obul | isHide]
    in (nmo, V2 nmx nmy, nps, evt)
 
 hitAction :: ObName -> [Chra] -> MapSize -> MapObject -> MapObject 
