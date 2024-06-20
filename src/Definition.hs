@@ -18,6 +18,7 @@ type ObChar = Char
 type ObName = T.Text
 type ObLayer = Int
 data Object = Ob ObChar ObName ObLayer Pos ObProperty deriving (Eq,Show)
+
 data ObProperty = Pl | Ch | En | Ef | Fr | Bl | Mv | No deriving (Eq,Show,Enum)
 --Player,Chara,Enemy,Effect,Free,Block,Move,Nothing
 type MapObject = [Object]
@@ -25,6 +26,9 @@ type MapObject = [Object]
 -- player event
 data PEvent = PMove Pos | PFace Object | PRide Object | PHide Object 
             | PUse Mana deriving (Eq,Show) 
+
+-- event action (player event info, code, repeat times)
+data EvAct = EvAct T.Text T.Text Int deriving (Eq,Show)
 
 -- mana
 data Shape = Round | Cubic | Flat | Pole | NoShape deriving (Eq,Show)
@@ -59,6 +63,7 @@ data Chra = Chra{_nme :: T.Text, _pos :: Pos, _dir :: Direction
 --mpd: map data, mpo: map objects, mpt: map objects changing with time
 --mpp: map position 
 --evp: event pool
+--eva: event actions
 --chs: characters(head is the player)
 --dbg: for debug
 data Game = Game{_pmd :: !IMode
@@ -69,6 +74,7 @@ data Game = Game{_pmd :: !IMode
                 ,_mpd :: !MapWhole, _mpo :: !MapObject, _mpt :: !MapObject
                 ,_mpp :: !Pos
                 ,_evp :: ![PEvent]
+                ,_eva :: ![EvAct]
                 ,_chs :: ![Chra]
                 ,_dbg :: !T.Text
                 } deriving (Eq,Show)

@@ -1,5 +1,5 @@
 init:
-さあ 冒險しやう!。\mvdi_scene0
+さあ 冒險しやう!。\a_ride.ch.A.2_mvdi.textA0 mvdi_scene0
 
 map0:
 000000000000000000

@@ -57,6 +57,7 @@ keyEvent inp mdf = do
       mapObject <- use mpo
       mapPos <- use mpp
       charas <- use chs
+      evAct <- use eva
       let player = head charas
       let pDir = player^.dir
       let pPos = player^.pos
@@ -71,7 +72,7 @@ keyEvent inp mdf = do
       mpo .= nmpo
       mpp .= nmpp
       evp .= evt
-      dbg .= debug <> "\n" <> T.pack (show evt) 
+      dbg .= debug <> "\n" <> T.pack (show evt) <> "--" <> T.pack (show evAct) 
 
 textUpdate :: EventM Name Game ()
 textUpdate = do

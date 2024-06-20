@@ -3,7 +3,7 @@
 module Code(exeCode) where
 
 import Brick.Types (EventM)
-import Control.Monad (unless)
+import Control.Monad (unless,when)
 import qualified Data.Text as T
 import Linear.V2 (V2(..))
 import Lens.Micro.TH (makeLenses)
@@ -28,6 +28,7 @@ exeOneCode evt = do
   let en_ags = T.split (=='_') evt
   let (en,ags) = fromMaybe ("null",[]) (uncons en_ags)
   unless (null ags) $ case en of
+    "a" -> when (length ags==2) $ setEventAction (head ags) (last ags) 
     "mvdi" -> moveDialog (head ags)
     "stmp" -> setMap (head ags)
     _ -> return ()
@@ -43,6 +44,10 @@ lookupFromSections tx = do
 
 setPlayer :: StateG ()
 setPlayer = pmd .= Ply 
+
+setEventAction :: T.Text -> T.Text -> StateG ()
+setEventAction ev ac = eva %= (<> [EvAct ev ac 0]) 
+  
 
 setMap :: T.Text -> StateG ()
 setMap i = do
