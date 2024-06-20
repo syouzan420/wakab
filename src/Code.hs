@@ -34,6 +34,7 @@ exeOneCode evt = do
     _ -> return ()
   case en of
     "stpl" -> setPlayer
+    "txt" -> setText
     _ -> return ()
 
 lookupFromSections :: T.Text -> StateG T.Text
@@ -45,8 +46,11 @@ lookupFromSections tx = do
 setPlayer :: StateG ()
 setPlayer = pmd .= Ply 
 
+setText :: StateG ()
+setText = pmd .= Txt
+
 setEventAction :: T.Text -> T.Text -> StateG ()
-setEventAction ev ac = eva %= (<> [EvAct ev ac 0]) 
+setEventAction ev ac = eva %= (<> [EvAct ev (T.replace "." "_" ac) 0]) 
   
 
 setMap :: T.Text -> StateG ()
@@ -70,6 +74,8 @@ moveDialog :: T.Text -> StateG ()
 moveDialog title = do
   newText <- lookupFromSections title
   unless (newText==T.empty) $ do
+    pmd .= Txt
+    tct .= 0
     txw .= newText
     txv %= (<> "\n \n")
 

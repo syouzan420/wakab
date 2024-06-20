@@ -23,12 +23,19 @@ data ObProperty = Pl | Ch | En | Ef | Fr | Bl | Mv | No deriving (Eq,Show,Enum)
 --Player,Chara,Enemy,Effect,Free,Block,Move,Nothing
 type MapObject = [Object]
 
+type Code = T.Text
+-- target event
+type TEvent = T.Text
+
 -- player event
 data PEvent = PMove Pos | PFace Object | PRide Object | PHide Object 
             | PUse Mana deriving (Eq,Show) 
 
--- event action (player event info, code, repeat times)
-data EvAct = EvAct T.Text T.Text Int deriving (Eq,Show)
+-- event action (target event info, code, repeat times)
+data EvAct = EvAct TEvent Code Int deriving (Eq,Show)
+
+-- Act State (NoAct TargetAct ExecAct)
+data Ast = NAct | TAct | EAct deriving (Eq,Show)
 
 -- mana
 data Shape = Round | Cubic | Flat | Pole | NoShape deriving (Eq,Show)

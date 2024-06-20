@@ -68,11 +68,45 @@ keyEvent inp mdf = do
             then movePlayer inp isDiag mapWinSize mapPos mapData mapObject
             else (mapObject,mapPos,pPos,[]) 
       let nPlayer = player{_dir=keyDir,_pos=nplp}
+      exeEvActs evt evAct
       chs .= nPlayer:tail charas
       mpo .= nmpo
       mpp .= nmpp
       evp .= evt
       dbg .= debug <> "\n" <> T.pack (show evt) <> "--" <> T.pack (show evAct) 
+
+exeEvActs :: [PEvent] -> [EvAct] -> EventM Name Game () 
+exeEvActs [] neas = eva .= neas 
+exeEvActs (pe:pes) eas = do
+  let (neas,ncds) = getCodes pe ([],[]) eas
+  unless (null ncds) $ mapM_ exeCode ncds 
+  exeEvActs pes neas
+
+getCodes :: PEvent -> ([EvAct],[Code]) -> [EvAct] -> ([EvAct],[Code])
+getCodes _ necs [] = necs
+getCodes pe (neas,ncds) (ea@(EvAct te cd i):eas) =
+  let ast = checkAct pe ea 
+   in case ast of
+        NAct -> getCodes pe (neas<>[ea],ncds) eas
+        TAct -> getCodes pe (neas<>[EvAct te cd (i+1)],ncds) eas
+        EAct -> getCodes pe (neas,ncds<>[cd]) eas
+
+checkAct :: PEvent -> EvAct -> Ast 
+checkAct pe (EvAct te _ co) =
+  let evis = T.splitOn "." te 
+   in if length evis==4 then  
+        let (act:tp:cont:num:_) = evis
+            isAct = case act of
+              "ride" -> case pe of
+                          PRide (Ob ch _ _ _ _) -> case tp of
+                                                        "ch" -> cont==T.pack [ch] 
+                                                        _ -> False
+                          _ -> False
+              _ -> False
+         in if isAct then if co+1==(read . T.unpack) num then EAct else TAct 
+                     else NAct 
+                        else NAct 
+
 
 textUpdate :: EventM Name Game ()
 textUpdate = do

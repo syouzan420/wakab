@@ -7,7 +7,7 @@ import Object (getPosByName,getLayerByName,getObjByPos,updatePosByName)
 import Converter (inpToDir,dirToDelta)
 import Definition (Pos,Input(..),MapWhole,MapObject,MapCell(..),PEvent(..)
                   ,Object(..),ObProperty(..),ObName,Chra(..),Direction(..)
-                  ,EvAct(..))
+                  )
 
 type MapSize = (Int,Int)
 type MapPos = Pos
@@ -48,24 +48,6 @@ movePlayer p b (V2 w h) (V2 mx my) md mo =
       evt = [PMove nps]<>[PFace obsl | isFace]<>[PRide obdl | isRide]
                        <>[PHide obul | isHide]
    in (nmo, V2 nmx nmy, nps, evt)
-
-
----not yet
-checkAct :: EvAct -> PEvent -> Int 
-checkAct (EvAct evi _ co) pe =
-  let evis = T.splitOn "." evi
-   in if length evis==4 then  
-        let (act:tp:cont:num:_) = evis
-            isAct = case act of
-              "ride" -> case pe of
-                          PRide (Ob ch _ _ _ _) -> case tp of
-                                                        "ch" -> cont==T.pack [ch] 
-                                                        _ -> False
-                          _ -> False
-              _ -> False
-         in if isAct then if co+1==(read . T.unpack) num then (-1) else co+1
-                     else co 
-                        else co
 
 hitAction :: ObName -> [Chra] -> MapSize -> MapObject -> MapObject 
 hitAction onm chras (mh,mw) mt = 
