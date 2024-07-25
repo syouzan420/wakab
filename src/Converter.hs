@@ -13,14 +13,17 @@ type Width = Int
 type Height = Int
 type Scroll = Int
 
---makeRectText :: Scroll -> Width -> Height -> T.Text -> [T.Text]
---makeRectText s w h tx = map (takeWidth s w . T.reverse) $ T.transpose $ concatMap  (takeHeight h) (T.lines (T.replace " " "　" tx))
-
 makeRectText :: Scroll -> Width -> Height -> T.Text -> [T.Text]
 makeRectText s w h tx = map (takeWidth s w) (makeTateText h tx)
 
 makeTateText :: Height -> T.Text -> [T.Text]
 makeTateText h tx = map T.reverse $ T.transpose $ concatMap (takeHeight h) (T.lines (T.replace " " "　" tx))
+
+--addSpace :: T.Text -> T.Text
+--addSpace tx = let (ch,txs) = fromMaybe (' ',T.empty) (T.uncons tx) 
+--                  ci = fromEnum ch
+--                  nch = if ci>32 && ci<125 then T.pack [' ',ch] else T.pack [ch]
+--               in if txs==T.empty then T.empty else nch <> addSpace txs
 
 takeWidth :: Scroll -> Width -> T.Text -> T.Text
 takeWidth s w tx = let lngT = T.length tx 
