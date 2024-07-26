@@ -6,6 +6,7 @@ import Brick.AttrMap (attrMap)
 import Control.Monad (void,forever)
 import Control.Concurrent (threadDelay,forkIO)
 import qualified Graphics.Vty as V
+import Graphics.Vty.Platform.Unix (mkVty)
 import Definition (Game(..),Name,CustomEvent(Ticking),TextSection(..))
 import Initialize (newGame)
 import UI (drawUI)
@@ -31,7 +32,7 @@ appMain = do
     writeBChan chan Ticking
     threadDelay 100000
 
-  let buildVty = V.mkVty V.defaultConfig
+  let buildVty = mkVty V.defaultConfig
   initialVty <- buildVty
 
   sections <- makeText 0

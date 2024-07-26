@@ -56,6 +56,7 @@ library
     , microlens-th
     , text
     , vty
+    , vty-unix
   default-language: Haskell2010
 
 executable wakab-exe
@@ -77,6 +78,7 @@ executable wakab-exe
     , microlens-th
     , text
     , vty
+    , vty-unix
     , wakab
   default-language: Haskell2010
 
@@ -100,5 +102,6 @@ test-suite wakab-test
     , microlens-th
     , text
     , vty
+    , vty-unix
     , wakab
   default-language: Haskell2010

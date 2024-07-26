@@ -29,6 +29,7 @@ dependencies:
 - microlens-mtl
 - bytestring
 - vty
+- vty-unix
 
 ghc-options:
 - -Wall
